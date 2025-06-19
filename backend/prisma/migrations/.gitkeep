@@ -1,0 +1,2 @@
+# This file ensures the migrations directory is tracked by git
+# while keeping the actual migration files ignored for development

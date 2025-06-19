@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id        String   @id @default(cuid())
+    email     String?  @unique
+    password  String?
+    name      String?
+    role      String   @default("USER") // USER, STAFF, ADMIN
+    isActive  Boolean  @default(true)
+    reports   Report[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("users")
+}
+
+model Report {
+    id          String   @id @default(cuid())
+    user        User?    @relation(fields: [userId], references: [id])
+    userId      String?
+    photoUrl    String?
+    category    String
+    description String
+    latitude    Float
+    longitude   Float
+    address     String?
+    status      String   @default("PENDING") // PENDING, IN_PROGRESS, RESOLVED, REJECTED
+    priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+    comment     String?
+    staffId     String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@map("reports")
+}
+
+model Notification {
+    id        String   @id @default(cuid())
+    userId    String
+    title     String
+    message   String
+    read      Boolean  @default(false)
+    type      String   @default("info")
+    createdAt DateTime @default(now())
+
+    @@map("notifications")
+}
