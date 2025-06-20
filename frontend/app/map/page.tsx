@@ -7,8 +7,9 @@ import { api } from '@/lib/api'
 import { ReportsMap } from '@/components/maps/ReportsMap'
 import { TestMap } from '@/components/maps/TestMap'
 import { SimpleMap } from '@/components/maps/SimpleMap'
-import { GlobalReportsMap } from '@/components/maps/GlobalReportsMap'
+import { GlobalReportsMap } from '@/components/maps/CleanReportsMap'
 import { GoogleMapsDebugger } from '@/components/maps/GoogleMapsDebugger'
+import { SimpleTestMap } from '@/components/maps/SimpleTestMap'
 import { 
   MapPinIcon, 
   FilterIcon, 
@@ -291,14 +292,8 @@ export default function MapPage() {
             </div>
           </div>
         </div>        {/* Map Container */}
-        <div className="flex-1 relative">
-          {/* Working Map - This should actually work! */}
-          <GlobalReportsMap
-            reports={filteredReports}
-            selectedReport={selectedReport}
-            onReportSelect={setSelectedReport}
-            className="w-full h-full"
-          />          {/* Test Components (overlay for debugging) */}
+        <div className="flex-1 relative">          {/* Working Map - This should actually work! */}
+          <SimpleTestMap />{/* Test Components (overlay for debugging) */}
           <div className="absolute top-4 left-4 right-4 z-10 space-y-4 max-w-md">
             <GoogleMapsDebugger />
             <div className="bg-white p-4 rounded-lg shadow-lg">
