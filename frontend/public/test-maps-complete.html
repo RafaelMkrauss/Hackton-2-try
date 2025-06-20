@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps API - Teste Direto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            margin: 10px 0;
+        }
+        .details summary {
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .console-log {
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗺️ Google Maps API - Teste Diagnóstico Completo</h1>
+        
+        <div id="api-key-status" class="status info">
+            <strong>🔑 API Key:</strong> <span id="api-key-display">Carregando...</span>
+        </div>
+
+        <div id="script-status" class="status info">
+            <strong>📜 Status do Script:</strong> <span id="script-display">Carregando...</span>
+        </div>
+
+        <div id="maps-status" class="status info">
+            <strong>🌍 Status do Google Maps:</strong> <span id="maps-display">Verificando...</span>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 Teste 1: Carregamento Direto da API</h2>
+            <button onclick="testDirectLoad()">Testar Carregamento Direto</button>
+            <div id="direct-load-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🗺️ Teste 2: Inicialização do Mapa</h2>
+            <button onclick="initializeMap()">Inicializar Mapa</button>
+            <div id="map"></div>
+            <div id="map-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔍 Teste 3: APIs Específicas</h2>
+            <button onclick="testPlacesAPI()">Testar Places API</button>
+            <button onclick="testGeocodingAPI()">Testar Geocoding API</button>
+            <div id="api-test-result"></div>
+        </div>
+
+        <details class="details">
+            <summary>🔧 Logs do Console</summary>
+            <div id="console-logs" class="console-log">
+                Console logs aparecerão aqui...
+            </div>
+            <button onclick="clearLogs()">Limpar Logs</button>
+        </details>
+
+        <details class="details">
+            <summary>📋 Informações de Debug</summary>
+            <div id="debug-info">
+                <p><strong>URL da Página:</strong> <span id="page-url"></span></p>
+                <p><strong>User Agent:</strong> <span id="user-agent"></span></p>
+                <p><strong>Timestamp:</strong> <span id="timestamp"></span></p>
+            </div>
+        </details>
+
+        <div class="details">
+            <h3>📝 Instruções para Configuração da API Key</h3>
+            <ol>
+                <li>Acesse o <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a></li>
+                <li>Selecione ou crie um projeto</li>
+                <li>Ative as seguintes APIs:
+                    <ul>
+                        <li>Maps JavaScript API</li>
+                        <li>Places API</li>
+                        <li>Geocoding API</li>
+                    </ul>
+                </li>
+                <li>Crie uma credencial (API Key)</li>
+                <li>Configure as restrições da API Key:
+                    <ul>
+                        <li><strong>Restrições de HTTP:</strong> Adicione <code>localhost:3001</code> e <code>localhost:*</code></li>
+                        <li><strong>Restrições de API:</strong> Selecione apenas as APIs necessárias</li>
+                    </ul>
+                </li>
+                <li>Ative o faturamento (obrigatório mesmo com uso gratuito)</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = 'AIzaSyDyF2pOsvsXTXtr6YXivIwywYumYzP_aNc';
+        let map = null;
+        let logs = [];
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            logs.push(logMessage);
+            console.log(logMessage);
+            
+            const logsElement = document.getElementById('console-logs');
+            logsElement.innerHTML = logs.join('<br>');
+            logsElement.scrollTop = logsElement.scrollHeight;
+        }
+
+        function clearLogs() {
+            logs = [];
+            document.getElementById('console-logs').innerHTML = 'Console logs aparecerão aqui...';
+        }
+
+        function updateStatus(elementId, message, isSuccess = null) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = message;
+                if (isSuccess !== null) {
+                    const parent = element.closest('.status');
+                    parent.className = 'status ' + (isSuccess ? 'success' : 'error');
+                }
+            }
+        }
+
+        function testDirectLoad() {
+            addLog('Iniciando teste de carregamento direto...');
+            
+            if (window.google && window.google.maps) {
+                updateStatus('direct-load-result', '✅ Google Maps já carregado!', true);
+                addLog('Google Maps já estava carregado');
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places&language=pt-BR&region=BR&callback=onDirectLoadSuccess`;
+            script.async = true;
+            script.defer = true;
+            
+            script.onerror = function(error) {
+                updateStatus('direct-load-result', '❌ Falha ao carregar script', false);
+                addLog('Erro ao carregar script: ' + error.message);
+            };
+            
+            window.onDirectLoadSuccess = function() {
+                updateStatus('direct-load-result', '✅ Script carregado com sucesso!', true);
+                addLog('Google Maps carregado via callback');
+                updateStatus('maps-display', 'Carregado com sucesso', true);
+            };
+            
+            document.head.appendChild(script);
+            addLog('Script adicionado ao DOM');
+        }
+
+        function initializeMap() {
+            if (!window.google || !window.google.maps) {
+                updateStatus('map-result', '❌ Google Maps não carregado. Execute o Teste 1 primeiro.', false);
+                addLog('Tentativa de inicializar mapa sem Google Maps carregado');
+                return;
+            }
+
+            try {
+                addLog('Tentando inicializar mapa...');
+                
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: -23.5505, lng: -46.6333 }, // São Paulo
+                    zoom: 13,
+                    mapTypeControl: true,
+                    streetViewControl: true,
+                    fullscreenControl: true,
+                    zoomControl: true
+                });
+
+                // Adicionar marcador
+                const marker = new google.maps.Marker({
+                    position: { lat: -23.5505, lng: -46.6333 },
+                    map: map,
+                    title: 'São Paulo - Teste de Localização',
+                    animation: google.maps.Animation.DROP
+                });
+
+                // Adicionar info window
+                const infoWindow = new google.maps.InfoWindow({
+                    content: '<div style="padding: 10px;"><h3>🎉 Sucesso!</h3><p>Google Maps está funcionando corretamente!</p></div>'
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+
+                updateStatus('map-result', '✅ Mapa inicializado com sucesso!', true);
+                addLog('Mapa inicializado com sucesso');
+
+            } catch (error) {
+                updateStatus('map-result', `❌ Erro ao inicializar mapa: ${error.message}`, false);
+                addLog('Erro ao inicializar mapa: ' + error.message);
+            }
+        }
+
+        function testPlacesAPI() {
+            if (!window.google || !window.google.maps || !window.google.maps.places) {
+                updateStatus('api-test-result', '❌ Places API não disponível', false);
+                addLog('Places API não carregada');
+                return;
+            }
+
+            try {
+                const service = new google.maps.places.PlacesService(map || document.createElement('div'));
+                updateStatus('api-test-result', '✅ Places API funcionando', true);
+                addLog('Places API teste bem-sucedido');
+            } catch (error) {
+                updateStatus('api-test-result', `❌ Places API erro: ${error.message}`, false);
+                addLog('Places API erro: ' + error.message);
+            }
+        }
+
+        function testGeocodingAPI() {
+            if (!window.google || !window.google.maps) {
+                updateStatus('api-test-result', '❌ Geocoding API não disponível', false);
+                addLog('Geocoding API não carregada');
+                return;
+            }
+
+            try {
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ address: 'São Paulo, Brasil' }, function(results, status) {
+                    if (status === 'OK') {
+                        updateStatus('api-test-result', '✅ Geocoding API funcionando', true);
+                        addLog('Geocoding API teste bem-sucedido');
+                    } else {
+                        updateStatus('api-test-result', `❌ Geocoding falhou: ${status}`, false);
+                        addLog('Geocoding API falhou: ' + status);
+                    }
+                });
+            } catch (error) {
+                updateStatus('api-test-result', `❌ Geocoding erro: ${error.message}`, false);
+                addLog('Geocoding API erro: ' + error.message);
+            }
+        }
+
+        // Inicialização da página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Exibir informações da API Key
+            updateStatus('api-key-display', API_KEY ? `${API_KEY.substring(0, 15)}...` : 'Não encontrada');
+            
+            // Verificar se o script já foi carregado
+            if (window.google && window.google.maps) {
+                updateStatus('script-display', 'Já carregado', true);
+                updateStatus('maps-display', 'Disponível', true);
+            } else {
+                updateStatus('script-display', 'Não carregado', false);
+                updateStatus('maps-display', 'Não disponível', false);
+            }
+
+            // Preencher informações de debug
+            document.getElementById('page-url').textContent = window.location.href;
+            document.getElementById('user-agent').textContent = navigator.userAgent;
+            document.getElementById('timestamp').textContent = new Date().toLocaleString();
+
+            addLog('Página carregada e pronta para testes');
+        });
+
+        // Capturar erros globais
+        window.addEventListener('error', function(event) {
+            addLog(`Erro global: ${event.error?.message || event.message}`, 'error');
+        });
+
+        // Override console.error para capturar logs
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
+            addLog('ERROR: ' + args.join(' '), 'error');
+            originalConsoleError.apply(console, args);
+        };
+    </script>
+</body>
+</html>

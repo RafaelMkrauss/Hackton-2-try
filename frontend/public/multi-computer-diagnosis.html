@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Google Maps - Multi-Computer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-weight: 500;
+        }
+        .success { background: #dcfce7; color: #166534; border-left: 4px solid #22c55e; }
+        .error { background: #fef2f2; color: #dc2626; border-left: 4px solid #ef4444; }
+        .warning { background: #fefce8; color: #ca8a04; border-left: 4px solid #eab308; }
+        .info { background: #eff6ff; color: #2563eb; border-left: 4px solid #3b82f6; }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 8px 8px 8px 0;
+        }
+        button:hover { background: #2563eb; }
+        .code {
+            background: #f1f5f9;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+        #map {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+        }
+        .step {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+        .step h3 {
+            color: #1f2937;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Diagnóstico Google Maps - Multi-Computer Setup</h1>
+        <p><strong>Situação:</strong> Google Cloud Console e VS Code/App rodando em computadores diferentes</p>
+        <p><strong>Problema:</strong> "Mapa carregando" para sempre</p>
+    </div>
+
+    <div class="grid">
+        <div class="container">
+            <h2>📊 Status Atual</h2>
+            <div id="status-container"></div>
+            <button onclick="runDiagnostics()">🔄 Executar Diagnóstico</button>
+            <button onclick="testApiKey()">🔑 Testar API Key</button>
+        </div>
+
+        <div class="container">
+            <h2>🌐 Informações da Rede</h2>
+            <div id="network-info"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🛠️ Solução para Multi-Computer</h2>
+        
+        <div class="step">
+            <h3>1. 🔧 Google Cloud Console - Configuração de Domínios</h3>
+            <p>Como você está rodando o app em um computador diferente do Google Cloud Console, precisa configurar os referrers corretamente:</p>
+            
+            <div class="warning">
+                <strong>⚠️ Problema Identificado:</strong> Restrições de HTTP referrer muito específicas
+            </div>
+
+            <h4>Soluções (escolha uma):</h4>
+            
+            <h5>Opção A: Remover Restrições (Temporário - Para Teste)</h5>
+            <div class="code">
+1. Vá para: https://console.cloud.google.com/apis/credentials
+2. Clique na sua API Key
+3. Em "Application restrictions" → Selecione "None"
+4. Salve
+5. Teste o mapa
+            </div>
+
+            <h5>Opção B: Configurar Todos os IPs/Domínios</h5>
+            <div class="code">
+HTTP referrers para adicionar:
+• localhost:3001/*
+• 127.0.0.1:3001/*
+• [SEU_IP_LOCAL]:3001/*
+• *:3001/*  (menos seguro, mas funciona)
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>2. 🔍 Descobrir Seu IP Local</h3>
+            <div id="ip-info"></div>
+            <button onclick="detectNetworkInfo()">🔍 Detectar Informações de Rede</button>
+        </div>
+
+        <div class="step">
+            <h3>3. ✅ APIs Obrigatórias</h3>
+            <div class="info">
+                Certifique-se que estas APIs estão HABILITADAS:
+                <ul>
+                    <li>Maps JavaScript API</li>
+                    <li>Places API</li>
+                    <li>Geocoding API</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>4. 💳 Billing (Mais Importante)</h3>
+            <div class="error">
+                <strong>🚨 CRÍTICO:</strong> Billing DEVE estar habilitado, mesmo para uso gratuito!
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🗺️ Teste do Mapa</h2>
+        <div id="map-status"></div>
+        <div id="map"></div>
+        <button onclick="loadMap()">🗺️ Carregar Mapa</button>
+        <button onclick="clearErrors()">🧹 Limpar Erros</button>
+    </div>
+
+    <div class="container">
+        <h2>📋 Console de Debug</h2>
+        <div id="debug-console" style="background: #1e293b; color: #e2e8f0; padding: 16px; border-radius: 8px; font-family: monospace; min-height: 200px; overflow-y: auto;"></div>
+    </div>
+
+    <script>
+        const API_KEY = 'AIzaSyDyF2pOsvsXTXtr6YXivIwywYumYzP_aNc';
+        let debugConsole = document.getElementById('debug-console');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                info: '#3b82f6',
+                success: '#22c55e',
+                error: '#ef4444',
+                warning: '#eab308'
+            };
+            
+            debugConsole.innerHTML += `<div style="color: ${colors[type]}; margin: 4px 0;">[${timestamp}] ${message}</div>`;
+            debugConsole.scrollTop = debugConsole.scrollHeight;
+            console.log(message);
+        }
+
+        function runDiagnostics() {
+            log('🔧 Iniciando diagnóstico completo...', 'info');
+            
+            // Check API Key
+            if (!API_KEY) {
+                log('❌ API Key não encontrada!', 'error');
+            } else {
+                log(`✅ API Key encontrada: ${API_KEY.substring(0, 15)}...`, 'success');
+            }
+
+            // Check Google object
+            if (typeof google !== 'undefined') {
+                log('✅ Google object está disponível', 'success');
+                if (google.maps) {
+                    log('✅ Google Maps API está carregada', 'success');
+                } else {
+                    log('❌ Google Maps API não está carregada', 'error');
+                }
+            } else {
+                log('❌ Google object não está disponível', 'error');
+            }
+
+            // Check existing scripts
+            const scripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
+            log(`📄 Scripts do Google Maps encontrados: ${scripts.length}`, scripts.length > 0 ? 'success' : 'warning');
+
+            // Network information
+            detectNetworkInfo();
+            
+            updateStatus();
+        }
+
+        function testApiKey() {
+            log('🔑 Testando API Key...', 'info');
+            
+            const testUrl = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places&callback=apiKeyTestCallback`;
+            
+            window.apiKeyTestCallback = function() {
+                log('✅ API Key válida! Google Maps carregado com sucesso.', 'success');
+                updateStatus();
+            };
+
+            const script = document.createElement('script');
+            script.src = testUrl;
+            script.onerror = function() {
+                log('❌ Erro ao carregar script do Google Maps. Verifique API Key e configurações.', 'error');
+                
+                // Common error messages
+                if (window.gm_authFailure) {
+                    log('🔍 Detectada falha de autenticação. Possíveis causas:', 'warning');
+                    log('   • Billing não habilitado', 'warning');
+                    log('   • API Key inválida', 'warning');
+                    log('   • Restrições de domínio muito rígidas', 'warning');
+                    log('   • APIs não habilitadas', 'warning');
+                }
+            };
+            
+            document.head.appendChild(script);
+        }
+
+        function detectNetworkInfo() {
+            log('🌐 Detectando informações de rede...', 'info');
+            
+            // Current URL info
+            const currentURL = window.location.href;
+            const hostname = window.location.hostname;
+            const port = window.location.port;
+            
+            log(`📍 URL atual: ${currentURL}`, 'info');
+            log(`🏠 Hostname: ${hostname}`, 'info');
+            log(`🚪 Porta: ${port}`, 'info');
+            
+            // Update network info display
+            document.getElementById('network-info').innerHTML = `
+                <div class="status info">
+                    <strong>URL Atual:</strong> ${currentURL}<br>
+                    <strong>Hostname:</strong> ${hostname}<br>
+                    <strong>Porta:</strong> ${port}<br>
+                    <strong>User Agent:</strong> ${navigator.userAgent.substring(0, 50)}...
+                </div>
+            `;
+
+            // Update IP info
+            document.getElementById('ip-info').innerHTML = `
+                <div class="info">
+                    <strong>Para configurar no Google Cloud Console:</strong><br>
+                    Adicione estes referrers em "HTTP referrers":
+                    <div class="code">
+${hostname}:${port}/*<br>
+localhost:${port}/*<br>
+127.0.0.1:${port}/*<br>
+*:${port}/*
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateStatus() {
+            const statusContainer = document.getElementById('status-container');
+            
+            let status = '';
+            
+            // API Key status
+            if (API_KEY) {
+                status += `<div class="status success">✅ API Key: ${API_KEY.substring(0, 15)}...</div>`;
+            } else {
+                status += `<div class="status error">❌ API Key não encontrada</div>`;
+            }
+
+            // Google object status
+            if (typeof google !== 'undefined') {
+                status += `<div class="status success">✅ Google object disponível</div>`;
+                if (google.maps) {
+                    status += `<div class="status success">✅ Google Maps API carregada</div>`;
+                } else {
+                    status += `<div class="status error">❌ Google Maps API não carregada</div>`;
+                }
+            } else {
+                status += `<div class="status error">❌ Google object não disponível</div>`;
+            }
+
+            // Scripts status
+            const scripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
+            if (scripts.length > 0) {
+                status += `<div class="status success">✅ ${scripts.length} script(s) do Google Maps encontrado(s)</div>`;
+            } else {
+                status += `<div class="status warning">⚠️ Nenhum script do Google Maps encontrado</div>`;
+            }
+
+            statusContainer.innerHTML = status;
+        }
+
+        function loadMap() {
+            log('🗺️ Tentando carregar mapa...', 'info');
+            
+            if (typeof google === 'undefined' || !google.maps) {
+                log('⚠️ Google Maps não está carregado. Carregando primeiro...', 'warning');
+                testApiKey();
+                setTimeout(loadMap, 3000);
+                return;
+            }
+
+            try {
+                const mapElement = document.getElementById('map');
+                const map = new google.maps.Map(mapElement, {
+                    center: { lat: -23.5505, lng: -46.6333 }, // São Paulo
+                    zoom: 12,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+
+                // Add a marker
+                const marker = new google.maps.Marker({
+                    position: { lat: -23.5505, lng: -46.6333 },
+                    map: map,
+                    title: 'Teste - São Paulo'
+                });
+
+                log('✅ Mapa carregado com sucesso!', 'success');
+                document.getElementById('map-status').innerHTML = '<div class="status success">✅ Mapa funcionando perfeitamente!</div>';
+                
+            } catch (error) {
+                log(`❌ Erro ao carregar mapa: ${error.message}`, 'error');
+                document.getElementById('map-status').innerHTML = `<div class="status error">❌ Erro: ${error.message}</div>`;
+            }
+        }
+
+        function clearErrors() {
+            debugConsole.innerHTML = '';
+            log('🧹 Console limpo', 'info');
+        }
+
+        // Error handling
+        window.gm_authFailure = function() {
+            log('🚨 FALHA DE AUTENTICAÇÃO DETECTADA!', 'error');
+            log('Possíveis soluções:', 'warning');
+            log('1. Habilitar billing no Google Cloud Console', 'warning');
+            log('2. Verificar se as APIs estão habilitadas', 'warning');
+            log('3. Configurar HTTP referrers corretamente', 'warning');
+            log('4. Verificar se a API Key está correta', 'warning');
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Diagnóstico iniciado', 'success');
+            detectNetworkInfo();
+            updateStatus();
+        });
+    </script>
+</body>
+</html>

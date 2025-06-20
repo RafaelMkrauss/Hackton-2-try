@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Maps API Key Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        #map { height: 400px; width: 100%; border: 1px solid #ccc; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .log { background: #f8f9fa; padding: 10px; border-radius: 3px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>🗺️ Google Maps API Key Validator</h1>
+    
+    <div class="test-section info">
+        <h3>📋 Current Configuration</h3>
+        <p><strong>API Key:</strong> <span id="api-key-display">Loading...</span></p>
+        <p><strong>Domain:</strong> <span id="domain-display">Loading...</span></p>
+        <p><strong>Timestamp:</strong> <span id="timestamp-display">Loading...</span></p>
+    </div>
+
+    <div class="test-section" id="load-test">
+        <h3>🔄 Test 1: API Script Loading</h3>
+        <button onclick="testAPILoading()">Test API Loading</button>
+        <div id="load-result">Click the button to test API loading</div>
+    </div>
+
+    <div class="test-section" id="map-test">
+        <h3>🗺️ Test 2: Map Creation</h3>
+        <button onclick="testMapCreation()">Create Test Map</button>
+        <div id="map"></div>
+        <div id="map-result">Click the button to test map creation</div>
+    </div>
+
+    <div class="test-section" id="api-test">
+        <h3>🔍 Test 3: API Endpoints</h3>
+        <button onclick="testGeocoding()">Test Geocoding API</button>
+        <button onclick="testPlaces()">Test Places API</button>
+        <div id="api-result">Click buttons to test specific APIs</div>
+    </div>
+
+    <div class="test-section">
+        <h3>📝 Console Logs</h3>
+        <div id="console-log" class="log">Console logs will appear here...</div>
+        <button onclick="clearLogs()">Clear Logs</button>
+    </div>
+
+    <div class="test-section error" id="troubleshooting" style="display: none;">
+        <h3>❌ Troubleshooting Steps</h3>
+        <ul>
+            <li><strong>Error 403:</strong> API key restrictions or billing issue</li>
+            <li><strong>Error 400:</strong> Invalid API key</li>
+            <li><strong>RefererNotAllowedMapError:</strong> Add your domain to HTTP referrers</li>
+            <li><strong>InvalidKeyMapError:</strong> API key is invalid</li>
+            <li><strong>RequestDeniedMapError:</strong> Check API restrictions and billing</li>
+        </ul>
+        <p><strong>Quick fixes:</strong></p>
+        <ol>
+            <li>Enable billing in Google Cloud Console</li>
+            <li>Add <code>localhost:3001/*</code> to HTTP referrers</li>
+            <li>Enable Maps JavaScript API, Places API, Geocoding API</li>
+            <li>Check API quotas aren't exceeded</li>
+        </ol>
+    </div>
+
+    <script>
+        const API_KEY = 'AIzaSyDyF2pOsvsXTXtr6YXivIwywYumYzP_aNc';
+        let logs = [];
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            logs.push(logMessage);
+            
+            const logElement = document.getElementById('console-log');
+            logElement.innerHTML = logs.join('<br>');
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            console.log(logMessage);
+        }
+
+        function clearLogs() {
+            logs = [];
+            document.getElementById('console-log').innerHTML = 'Console logs will appear here...';
+        }
+
+        function showTroubleshooting() {
+            document.getElementById('troubleshooting').style.display = 'block';
+        }
+
+        function updateResult(elementId, message, isSuccess = null) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = message;
+            
+            const section = element.closest('.test-section');
+            section.className = 'test-section ' + (isSuccess === true ? 'success' : isSuccess === false ? 'error' : 'info');
+        }
+
+        function testAPILoading() {
+            addLog('Testing API script loading...');
+            updateResult('load-result', '🔄 Loading Google Maps API...', null);
+
+            // Remove any existing scripts
+            const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
+            existingScripts.forEach(script => script.remove());
+
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places&callback=onAPILoaded`;
+            script.async = true;
+            script.defer = true;
+
+            window.onAPILoaded = function() {
+                addLog('✅ Google Maps API loaded successfully');
+                updateResult('load-result', '✅ API loaded successfully! Google Maps is available.', true);
+            };
+
+            script.onerror = function(error) {
+                addLog('❌ Failed to load Google Maps API');
+                updateResult('load-result', '❌ Failed to load API. Check your API key and network connection.', false);
+                showTroubleshooting();
+            };
+
+            document.head.appendChild(script);
+            addLog('API script added to page');
+        }
+
+        function testMapCreation() {
+            if (!window.google || !window.google.maps) {
+                updateResult('map-result', '❌ Google Maps not loaded. Run Test 1 first.', false);
+                return;
+            }
+
+            addLog('Testing map creation...');
+            updateResult('map-result', '🔄 Creating map...', null);
+
+            try {
+                const map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: -23.5505, lng: -46.6333 }, // São Paulo
+                    zoom: 13,
+                    mapTypeControl: true,
+                    streetViewControl: true,
+                    fullscreenControl: true,
+                });
+
+                // Add a marker
+                const marker = new google.maps.Marker({
+                    position: { lat: -23.5505, lng: -46.6333 },
+                    map: map,
+                    title: 'Test Marker - São Paulo',
+                    animation: google.maps.Animation.DROP
+                });
+
+                // Add info window
+                const infoWindow = new google.maps.InfoWindow({
+                    content: '<div style="padding: 10px;"><h3>🎉 Success!</h3><p>Your Google Maps API is working perfectly!</p><p>Location: São Paulo, Brazil</p></div>'
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+
+                addLog('✅ Map created successfully with marker');
+                updateResult('map-result', '✅ Map created successfully! Click the marker for more info.', true);
+
+            } catch (error) {
+                addLog(`❌ Map creation failed: ${error.message}`);
+                updateResult('map-result', `❌ Map creation failed: ${error.message}`, false);
+                showTroubleshooting();
+            }
+        }
+
+        function testGeocoding() {
+            if (!window.google || !window.google.maps) {
+                updateResult('api-result', '❌ Google Maps not loaded. Run Test 1 first.', false);
+                return;
+            }
+
+            addLog('Testing Geocoding API...');
+            updateResult('api-result', '🔄 Testing Geocoding API...', null);
+
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: 'São Paulo, Brasil' }, function(results, status) {
+                if (status === 'OK') {
+                    addLog('✅ Geocoding API working');
+                    updateResult('api-result', `✅ Geocoding API working! Found: ${results[0].formatted_address}`, true);
+                } else {
+                    addLog(`❌ Geocoding API failed: ${status}`);
+                    updateResult('api-result', `❌ Geocoding API failed: ${status}`, false);
+                    showTroubleshooting();
+                }
+            });
+        }
+
+        function testPlaces() {
+            if (!window.google || !window.google.maps || !window.google.maps.places) {
+                updateResult('api-result', '❌ Places API not loaded. Check if Places library is enabled.', false);
+                return;
+            }
+
+            addLog('Testing Places API...');
+            updateResult('api-result', '🔄 Testing Places API...', null);
+
+            try {
+                const service = new google.maps.places.PlacesService(document.createElement('div'));
+                addLog('✅ Places API service created successfully');
+                updateResult('api-result', '✅ Places API is available and working!', true);
+            } catch (error) {
+                addLog(`❌ Places API failed: ${error.message}`);
+                updateResult('api-result', `❌ Places API failed: ${error.message}`, false);
+                showTroubleshooting();
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('api-key-display').textContent = API_KEY ? `${API_KEY.substring(0, 15)}...` : 'Not found';
+            document.getElementById('domain-display').textContent = window.location.href;
+            document.getElementById('timestamp-display').textContent = new Date().toLocaleString();
+            
+            addLog('Page loaded and ready for testing');
+        });
+
+        // Capture console errors
+        window.addEventListener('error', function(event) {
+            addLog(`Global error: ${event.error?.message || event.message}`);
+            showTroubleshooting();
+        });
+
+        // Override console.error to capture Google Maps errors
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
+            const message = args.join(' ');
+            if (message.includes('Google') || message.includes('Maps') || message.includes('API')) {
+                addLog(`Maps error: ${message}`);
+                showTroubleshooting();
+            }
+            originalConsoleError.apply(console, args);
+        };
+    </script>
+</body>
+</html>

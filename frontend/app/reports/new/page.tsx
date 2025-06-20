@@ -5,6 +5,8 @@ import { useAuth } from '@/lib/auth/AuthContext'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { REPORT_CATEGORIES } from '@/lib/constants/categories'
+import { LocationPicker } from '@/components/maps/LocationPicker'
+import { WorkingLocationPicker } from '@/components/maps/WorkingLocationPicker'
 import { 
   MapPinIcon, 
   CameraIcon, 
@@ -34,7 +36,6 @@ export default function NewReportPage() {
   const [images, setImages] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isGettingLocation, setIsGettingLocation] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   useEffect(() => {
@@ -66,52 +67,9 @@ export default function NewReportPage() {
       reader.readAsDataURL(file)
     })
   }
-
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index))
     setImagePreviews(prev => prev.filter((_, i) => i !== index))
-  }
-
-  const getCurrentLocation = () => {
-    setIsGettingLocation(true)
-    
-    if (!navigator.geolocation) {
-      setError('Geolocalização não é suportada pelo seu navegador')
-      setIsGettingLocation(false)
-      return
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords
-        setFormData(prev => ({
-          ...prev,
-          latitude,
-          longitude
-        }))
-        
-        // Use reverse geocoding if available
-        if (window.google?.maps) {
-          const geocoder = new window.google.maps.Geocoder()
-          const latlng = { lat: latitude, lng: longitude }
-          
-          geocoder.geocode({ location: latlng }, (results, status) => {
-            if (status === 'OK' && results && results[0]) {
-              setFormData(prev => ({
-                ...prev,
-                location: results[0].formatted_address
-              }))
-            }
-          })
-        }
-        
-        setIsGettingLocation(false)
-      },
-      (error) => {
-        setError('Erro ao obter localização: ' + error.message)
-        setIsGettingLocation(false)
-      }
-    )
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -253,40 +211,69 @@ export default function NewReportPage() {
               placeholder="Descreva o problema em detalhes..."
               required
             />
-          </div>
-
-          {/* Localização */}
+          </div>          {/* Localização */}
           <div>
             <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
               Localização *
             </label>
-            <div className="flex space-x-2">
-              <input
-                id="location"
-                name="location"
-                type="text"
-                value={formData.location}
-                onChange={handleInputChange}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Endereço ou descrição do local"
-                required
+            <input
+              id="location"
+              name="location"
+              type="text"
+              value={formData.location}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
+              placeholder="Endereço ou descrição do local"
+              required
+            />
+              <div className="space-y-4">
+              <h3 className="text-lg font-medium">🗺️ Localização do Problema</h3>
+              
+              {/* Working LocationPicker */}
+              <WorkingLocationPicker
+                onLocationSelect={(location) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    latitude: location.lat,
+                    longitude: location.lng,
+                    location: location.address || prev.location
+                  }))
+                }}
+                initialLocation={
+                  formData.latitude && formData.longitude 
+                    ? { lat: formData.latitude, lng: formData.longitude }
+                    : undefined
+                }
               />
-              <button
-                type="button"
-                onClick={getCurrentLocation}
-                disabled={isGettingLocation}
-                className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-              >
-                {isGettingLocation ? (
-                  <LoaderIcon className="w-5 h-5 animate-spin" />
-                ) : (
-                  <MapPinIcon className="w-5 h-5" />
-                )}
-              </button>
+              
+              {/* Fallback LocationPicker for comparison */}
+              <details className="mt-4">
+                <summary className="cursor-pointer text-sm text-gray-600">
+                  🔧 Teste LocationPicker original (pode não funcionar)
+                </summary>
+                <div className="mt-2 p-4 bg-gray-50 rounded">
+                  <LocationPicker
+                    onLocationSelect={(location) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        latitude: location.lat,
+                        longitude: location.lng,
+                        location: location.address || prev.location
+                      }))
+                    }}
+                    initialLocation={
+                      formData.latitude && formData.longitude 
+                        ? { lat: formData.latitude, lng: formData.longitude }
+                        : undefined
+                    }
+                  />
+                </div>
+              </details>
             </div>
+            
             {formData.latitude && formData.longitude && (
-              <p className="text-sm text-green-600 mt-1">
-                Localização capturada: {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}
+              <p className="text-sm text-green-600 mt-2">
+                Coordenadas: {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}
               </p>
             )}
           </div>
