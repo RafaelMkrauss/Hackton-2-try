@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/lib/auth/AuthContext'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
+import { REPORT_CATEGORIES } from '@/lib/constants/categories'
 import { 
   MapPinIcon, 
   CameraIcon, 
@@ -36,17 +37,6 @@ export default function NewReportPage() {
   const [isGettingLocation, setIsGettingLocation] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-
-  const categories = [
-    'Infraestrutura',
-    'Limpeza Urbana',
-    'Iluminação',
-    'Segurança',
-    'Transporte',
-    'Meio Ambiente',
-    'Outros'
-  ]
-
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login')
@@ -239,9 +229,8 @@ export default function NewReportPage() {
               onChange={handleInputChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
-            >
-              <option value="">Selecione uma categoria</option>
-              {categories.map((category) => (
+            >              <option value="">Selecione uma categoria</option>
+              {REPORT_CATEGORIES.map((category) => (
                 <option key={category} value={category}>
                   {category}
                 </option>

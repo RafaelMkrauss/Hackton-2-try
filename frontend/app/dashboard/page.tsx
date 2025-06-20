@@ -12,7 +12,8 @@ import {
   UsersIcon,
   CheckCircleIcon,
   ClockIcon,
-  AlertTriangleIcon
+  AlertTriangleIcon,
+  LogOutIcon
 } from 'lucide-react'
 
 interface DashboardStats {
@@ -31,7 +32,7 @@ interface RecentReport {
 }
 
 export default function DashboardPage() {
-  const { user, loading } = useAuth()
+  const { user, loading, logout } = useAuth()
   const router = useRouter()
   const [stats, setStats] = useState<DashboardStats>({
     totalReports: 0,
@@ -52,6 +53,9 @@ export default function DashboardPage() {
       fetchDashboardData()
     }
   }, [user, loading, router])
+  const handleLogout = () => {
+    logout()
+  }
 
   const fetchDashboardData = async () => {
     try {
@@ -112,8 +116,7 @@ export default function DashboardPage() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
               <p className="text-gray-600">Olá, {user?.name}!</p>
-            </div>
-            <div className="flex items-center space-x-4">
+            </div>            <div className="flex items-center space-x-4">
               <button className="p-2 text-gray-400 hover:text-gray-600">
                 <BellIcon className="w-6 h-6" />
               </button>
@@ -123,6 +126,13 @@ export default function DashboardPage() {
               >
                 <PlusCircleIcon className="w-5 h-5" />
                 <span>Nova Denúncia</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center space-x-2"
+              >
+                <LogOutIcon className="w-5 h-5" />
+                <span>Sair</span>
               </button>
             </div>
           </div>
@@ -181,10 +191,8 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        </div>        {/* Quick Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
           <button
             onClick={() => router.push('/reports/new')}
             className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow text-left"
@@ -196,6 +204,21 @@ export default function DashboardPage() {
               <div className="ml-4">
                 <h3 className="text-lg font-medium text-gray-900">Nova Denúncia</h3>
                 <p className="text-gray-600">Reportar um problema urbano</p>
+              </div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => router.push('/evaluation')}
+            className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow text-left"
+          >
+            <div className="flex items-center">
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <BarChart3Icon className="w-6 h-6 text-purple-600" />
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-medium text-gray-900">Avaliação Semestral</h3>
+                <p className="text-gray-600">Avaliar serviços da sua região</p>
               </div>
             </div>
           </button>

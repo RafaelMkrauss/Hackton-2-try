@@ -11,15 +11,20 @@ datasource db {
 }
 
 model User {
-    id        String   @id @default(cuid())
-    email     String?  @unique
-    password  String?
-    name      String?
-    role      String   @default("USER") // USER, STAFF, ADMIN
-    isActive  Boolean  @default(true)
-    reports   Report[]
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id           String                @id @default(cuid())
+    email        String?               @unique
+    password     String?
+    name         String?
+    role         String                @default("USER") // USER, STAFF, ADMIN
+    isActive     Boolean               @default(true)
+    address      String?
+    latitude     Float?
+    longitude    Float?
+    neighborhood String?
+    reports      Report[]
+    evaluations  SemestralEvaluation[]
+    createdAt    DateTime              @default(now())
+    updatedAt    DateTime              @updatedAt
 
     @@map("users")
 }
@@ -54,4 +59,31 @@ model Notification {
     createdAt DateTime @default(now())
 
     @@map("notifications")
+}
+
+model SemestralEvaluation {
+    id             String           @id @default(cuid())
+    user           User             @relation(fields: [userId], references: [id])
+    userId         String
+    semester       Int // 1 or 2
+    year           Int
+    ratings        CategoryRating[]
+    generalComment String?
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
+
+    @@unique([userId, semester, year])
+    @@map("semestral_evaluations")
+}
+
+model CategoryRating {
+    id           String              @id @default(cuid())
+    evaluation   SemestralEvaluation @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
+    evaluationId String
+    category     String // Same categories as Report model
+    rating       Int // 1-5 scale
+    comment      String?
+    createdAt    DateTime            @default(now())
+
+    @@map("category_ratings")
 }

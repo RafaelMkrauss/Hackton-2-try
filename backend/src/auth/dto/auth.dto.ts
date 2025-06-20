@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsOptional, IsString, MinLength, IsNumber, IsLatitude, IsLongitude } from 'class-validator';
 
 export class LoginDto {
   @IsEmail({}, { message: 'Email deve ser válido' })
@@ -20,6 +20,24 @@ export class RegisterDto {
   @IsOptional()
   @IsString({ message: 'Nome deve ser uma string' })
   name?: string;
+
+  @IsOptional()
+  @IsString({ message: 'Endereço deve ser uma string' })
+  address?: string;
+
+  @IsOptional()
+  @IsNumber({}, { message: 'Latitude deve ser um número' })
+  @IsLatitude({ message: 'Latitude deve ser válida' })
+  latitude?: number;
+
+  @IsOptional()
+  @IsNumber({}, { message: 'Longitude deve ser um número' })
+  @IsLongitude({ message: 'Longitude deve ser válida' })
+  longitude?: number;
+
+  @IsOptional()
+  @IsString({ message: 'Bairro deve ser uma string' })
+  neighborhood?: string;
 }
 
 export class AuthResponseDto {

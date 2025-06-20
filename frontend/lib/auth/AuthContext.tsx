@@ -99,7 +99,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     }
   };
-
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -107,6 +106,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('user');
     delete api.defaults.headers.common['Authorization'];
     toast.success('Logout realizado com sucesso!');
+    // Force redirect to home page
+    window.location.href = '/';
   };
   const value = {
     user,

@@ -10,9 +10,8 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
-
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
-    const { email, password, name } = registerDto;
+    const { email, password, name, address, latitude, longitude, neighborhood } = registerDto;
 
     // Verificar se usuário já existe
     const existingUser = await this.prisma.user.findUnique({
@@ -32,6 +31,10 @@ export class AuthService {
         email,
         password: hashedPassword,
         name: name || email.split('@')[0],
+        address,
+        latitude,
+        longitude,
+        neighborhood,
       },
     });
 
