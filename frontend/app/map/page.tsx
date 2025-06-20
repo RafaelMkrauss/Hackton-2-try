@@ -4,6 +4,11 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth/AuthContext'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
+import { ReportsMap } from '@/components/maps/ReportsMap'
+import { TestMap } from '@/components/maps/TestMap'
+import { SimpleMap } from '@/components/maps/SimpleMap'
+import { GlobalReportsMap } from '@/components/maps/GlobalReportsMap'
+import { GoogleMapsDebugger } from '@/components/maps/GoogleMapsDebugger'
 import { 
   MapPinIcon, 
   FilterIcon, 
@@ -285,23 +290,24 @@ export default function MapPage() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Map Container */}
+        </div>        {/* Map Container */}
         <div className="flex-1 relative">
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-            <div className="text-center">
-              <MapPinIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Mapa Interativo
-              </h3>
-              <p className="text-gray-600 mb-4">
-                O mapa com as denúncias será carregado aqui
-              </p>
-              <div className="text-sm text-gray-500">
-                <p>Integração com Google Maps será implementada</p>
-                <p>Mostrando {filteredReports.length} denúncias com localização</p>
-              </div>
+          {/* Working Map - This should actually work! */}
+          <GlobalReportsMap
+            reports={filteredReports}
+            selectedReport={selectedReport}
+            onReportSelect={setSelectedReport}
+            className="w-full h-full"
+          />          {/* Test Components (overlay for debugging) */}
+          <div className="absolute top-4 left-4 right-4 z-10 space-y-4 max-w-md">
+            <GoogleMapsDebugger />
+            <div className="bg-white p-4 rounded-lg shadow-lg">
+              <h3 className="font-medium mb-2">🧪 Teste com @react-google-maps/api</h3>
+              <TestMap />
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-lg">
+              <h3 className="font-medium mb-2">🗺️ Teste SimpleMap (implementação direta)</h3>
+              <SimpleMap className="w-full h-32" />
             </div>
           </div>
 
