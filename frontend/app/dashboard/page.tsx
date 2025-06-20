@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth/AuthContext'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
+import { AccessibleStatusBadge } from '@/components/ui/AccessibleStatusBadge'
 import { 
   BarChart3Icon, 
   MapPinIcon, 
@@ -13,7 +14,11 @@ import {
   CheckCircleIcon,
   ClockIcon,
   AlertTriangleIcon,
-  LogOutIcon
+  LogOutIcon,
+  HomeIcon,
+  TrendingUpIcon,
+  EyeIcon,
+  MessageSquareIcon
 } from 'lucide-react'
 
 interface DashboardStats {
@@ -108,28 +113,40 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+    <div className="min-h-screen bg-gray-50">      {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-gray-600">Olá, {user?.name}!</p>
-            </div>            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-400 hover:text-gray-600">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                <HomeIcon className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+                <p className="text-gray-600">👋 Olá, {user?.name}! Bem-vindo ao painel de denúncias</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <button 
+                className="p-2 text-gray-400 hover:text-gray-600 focus:ring-2 focus:ring-blue-300 rounded-lg transition-colors relative"
+                aria-label="Notificações"
+              >
                 <BellIcon className="w-6 h-6" />
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
               </button>
               <button
                 onClick={() => router.push('/reports/new')}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 flex items-center space-x-2 transition-colors font-medium"
+                aria-label="Criar nova denúncia"
               >
                 <PlusCircleIcon className="w-5 h-5" />
-                <span>Nova Denúncia</span>
+                <span>📝 Nova Denúncia</span>
               </button>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center space-x-2"
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-300 flex items-center space-x-2 transition-colors"
+                aria-label="Fazer logout"
               >
                 <LogOutIcon className="w-5 h-5" />
                 <span>Sair</span>
@@ -139,150 +156,183 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Grid */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500">
             <div className="flex items-center">
               <div className="p-3 bg-blue-100 rounded-lg">
                 <BarChart3Icon className="w-6 h-6 text-blue-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total de Denúncias</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalReports}</p>
+                <p className="text-sm font-medium text-gray-600">📊 Total de Denúncias</p>
+                <p className="text-2xl font-bold text-gray-900" aria-label={`${stats.totalReports} denúncias no total`}>
+                  {stats.totalReports}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">Todas as denúncias registradas</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-yellow-500">
             <div className="flex items-center">
               <div className="p-3 bg-yellow-100 rounded-lg">
                 <ClockIcon className="w-6 h-6 text-yellow-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Pendentes</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.pendingReports}</p>
+                <p className="text-sm font-medium text-gray-600">⏳ Pendentes</p>
+                <p className="text-2xl font-bold text-gray-900" aria-label={`${stats.pendingReports} denúncias pendentes`}>
+                  {stats.pendingReports}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">Aguardando análise ou resolução</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-green-500">
             <div className="flex items-center">
               <div className="p-3 bg-green-100 rounded-lg">
                 <CheckCircleIcon className="w-6 h-6 text-green-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Resolvidas</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.completedReports}</p>
+                <p className="text-sm font-medium text-gray-600">✅ Resolvidas</p>
+                <p className="text-2xl font-bold text-gray-900" aria-label={`${stats.completedReports} denúncias resolvidas`}>
+                  {stats.completedReports}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">Problemas solucionados</p>
               </div>
             </div>
           </div>
 
           {user?.role === 'USER' && (
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-purple-500">
               <div className="flex items-center">
                 <div className="p-3 bg-purple-100 rounded-lg">
                   <UsersIcon className="w-6 h-6 text-purple-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Minhas Denúncias</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.myReports || 0}</p>
+                  <p className="text-sm font-medium text-gray-600">👤 Minhas Denúncias</p>
+                  <p className="text-2xl font-bold text-gray-900" aria-label={`${stats.myReports || 0} suas denúncias`}>
+                    {stats.myReports || 0}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Denúncias que você criou</p>
                 </div>
               </div>
             </div>
           )}
         </div>        {/* Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-          <button
-            onClick={() => router.push('/reports/new')}
-            className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow text-left"
-          >
-            <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <PlusCircleIcon className="w-6 h-6 text-blue-600" />
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            <TrendingUpIcon className="w-5 h-5 mr-2 text-blue-600" />
+            ⚡ Ações Rápidas
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <button
+              onClick={() => router.push('/reports/new')}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all transform hover:scale-105 text-left focus:ring-2 focus:ring-blue-300"
+              aria-label="Criar nova denúncia"
+            >
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-white bg-opacity-20 rounded-lg">
+                  <PlusCircleIcon className="w-6 h-6" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-lg font-semibold">📝 Nova Denúncia</h3>
+                  <p className="text-sm opacity-90">Reporte um problema</p>
+                </div>
               </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-900">Nova Denúncia</h3>
-                <p className="text-gray-600">Reportar um problema urbano</p>
-              </div>
-            </div>
-          </button>
+            </button>
 
-          <button
-            onClick={() => router.push('/evaluation')}
-            className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow text-left"
-          >
-            <div className="flex items-center">
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <BarChart3Icon className="w-6 h-6 text-purple-600" />
+            <button
+              onClick={() => router.push('/reports')}
+              className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all transform hover:scale-105 text-left focus:ring-2 focus:ring-green-300"
+              aria-label="Ver todas as denúncias"
+            >
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-white bg-opacity-20 rounded-lg">
+                  <EyeIcon className="w-6 h-6" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-lg font-semibold">👀 Ver Denúncias</h3>
+                  <p className="text-sm opacity-90">Acompanhe o progresso</p>
+                </div>
               </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-900">Avaliação Semestral</h3>
-                <p className="text-gray-600">Avaliar serviços da sua região</p>
-              </div>
-            </div>
-          </button>
+            </button>
 
-          <button
-            onClick={() => router.push('/map')}
-            className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow text-left"
-          >
-            <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <MapPinIcon className="w-6 h-6 text-green-600" />
+            <button
+              onClick={() => router.push('/map')}
+              className="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all transform hover:scale-105 text-left focus:ring-2 focus:ring-purple-300"
+              aria-label="Ver mapa de denúncias"
+            >
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-white bg-opacity-20 rounded-lg">
+                  <MapPinIcon className="w-6 h-6" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-lg font-semibold">🗺️ Ver no Mapa</h3>
+                  <p className="text-sm opacity-90">Localização dos problemas</p>
+                </div>
               </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-900">Mapa de Denúncias</h3>
-                <p className="text-gray-600">Ver denúncias no mapa</p>
-              </div>
-            </div>
-          </button>
+            </button>
 
-          <button
-            onClick={() => router.push('/reports')}
-            className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow text-left"
-          >
-            <div className="flex items-center">
-              <div className="p-3 bg-orange-100 rounded-lg">
-                <BarChart3Icon className="w-6 h-6 text-orange-600" />
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-medium text-gray-900">Ver Todas</h3>
-                <p className="text-gray-600">Lista completa de denúncias</p>
-              </div>
-            </div>
-          </button>
+            <button
+              onClick={() => router.push('/help')}
+              className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all transform hover:scale-105 text-left focus:ring-2 focus:ring-orange-300"
+              aria-label="Central de ajuda"
+            >
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-white bg-opacity-20 rounded-lg">
+                  <MessageSquareIcon className="w-6 h-6" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-lg font-semibold">❓ Ajuda</h3>
+                  <p className="text-sm opacity-90">Como usar a plataforma</p>
+                </div>
+              </div>            </button>
+          </div>
         </div>
 
         {/* Recent Reports */}
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white rounded-lg shadow-md">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Denúncias Recentes</h2>
+            <h2 className="text-lg font-medium text-gray-900 flex items-center">
+              <ClockIcon className="w-5 h-5 mr-2 text-gray-600" />
+              📋 Denúncias Recentes
+            </h2>
           </div>
           <div className="divide-y divide-gray-200">
             {recentReports.length > 0 ? (
               recentReports.map((report) => (
-                <div key={report.id} className="px-6 py-4 hover:bg-gray-50">
+                <div key={report.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h3 className="text-sm font-medium text-gray-900">{report.title}</h3>
-                      <p className="text-sm text-gray-600">{report.category}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-sm text-gray-600 flex items-center mt-1">
+                        <span className="mr-2">🏷️</span>
+                        {report.category}
+                      </p>
+                      <p className="text-xs text-gray-500 flex items-center mt-1">
+                        <span className="mr-2">📅</span>
                         {new Date(report.createdAt).toLocaleDateString('pt-BR')}
                       </p>
-                    </div>
-                    <div className="flex items-center">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(report.status)}`}>
-                        {getStatusIcon(report.status)}
-                        <span className="ml-1">{report.status.replace('_', ' ')}</span>
-                      </span>
+                    </div>                    <div className="flex items-center">
+                      <AccessibleStatusBadge 
+                        status={report.status} 
+                        size="md"
+                        showIcon={true}
+                      />
                     </div>
                   </div>
                 </div>
               ))
             ) : (
               <div className="px-6 py-8 text-center">
-                <p className="text-gray-500">Nenhuma denúncia encontrada</p>
+                <div className="text-gray-400 mb-2">
+                  <MessageSquareIcon className="w-12 h-12 mx-auto" />
+                </div>
+                <p className="text-gray-500 font-medium">📋 Nenhuma denúncia encontrada</p>
+                <p className="text-gray-400 text-sm mt-1">
+                  Quando você ou outros usuários criarem denúncias, elas aparecerão aqui
+                </p>
               </div>
             )}
           </div>
