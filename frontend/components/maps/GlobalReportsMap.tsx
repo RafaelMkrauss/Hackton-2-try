@@ -56,8 +56,7 @@ export function GlobalReportsMap({
       if (checkCount >= 50) { // 5 seconds
         if (isMounted) {
           setError('Google Maps não carregou após 5 segundos.\n\nPossíveis causas:\n• Billing não habilitado\n• API Key inválida\n• Restrições de domínio\n• Conexão lenta')
-          setLoadingMessage('Timeout')
-        }
+          setLoadingMessage('Timeout')        }
         return true
       }
       
@@ -70,10 +69,28 @@ export function GlobalReportsMap({
         return
       }
 
+      // Force container dimensions
+      const container = mapRef.current
+      console.log('Container dimensions:', {
+        width: container.offsetWidth,
+        height: container.offsetHeight,
+        display: window.getComputedStyle(container).display,
+        visibility: window.getComputedStyle(container).visibility
+      })
+
+      // Ensure container has proper size
+      if (container.offsetWidth === 0 || container.offsetHeight === 0) {
+        console.warn('Container has zero dimensions, forcing size...')
+        container.style.width = '100%'
+        container.style.height = '400px'
+        container.style.minHeight = '400px'
+        container.style.display = 'block'
+      }
+
       try {
         console.log('Inicializando mapa com Google Maps global...')
         
-        const map = new (window as any).google.maps.Map(mapRef.current, {
+        const mapOptions = {
           center: { lat: -23.5505, lng: -46.6333 }, // São Paulo
           zoom: 12,
           mapTypeControl: true,
@@ -87,7 +104,20 @@ export function GlobalReportsMap({
               stylers: [{ visibility: 'on' }]
             }
           ]
-        })
+        }
+
+        console.log('Creating map with options:', mapOptions)
+        const map = new (window as any).google.maps.Map(container, mapOptions)
+        
+        console.log('Map instance created:', map)
+        
+        // Force a resize after creation
+        setTimeout(() => {
+          if (map && (window as any).google?.maps?.event) {
+            (window as any).google.maps.event.trigger(map, 'resize')
+            console.log('Map resize triggered')
+          }
+        }, 100)
 
         mapInstance.current = map
         
@@ -291,10 +321,19 @@ export function GlobalReportsMap({
     }
     return colorMap[status] || '#6b7280'
   }
-
   return (
     <div className="relative">
-      <div ref={mapRef} className={className} />
+      <div 
+        ref={mapRef} 
+        className={className}
+        style={{
+          width: '100%',
+          height: '400px',
+          minHeight: '400px',
+          backgroundColor: '#f0f0f0',
+          border: '1px solid #ccc'
+        }}
+      />
       
       {error && (
         <div className="absolute inset-0 flex items-center justify-center bg-red-50 rounded-lg border-2 border-red-200">
