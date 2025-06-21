@@ -64,18 +64,25 @@ export default function DashboardPage() {
   const handleLogout = () => {
     logout()
   }
-
   const fetchDashboardData = async () => {
     try {
       const [statsResponse, reportsResponse] = await Promise.all([
-        api.get('/reports/stats'),
-        api.get('/reports?limit=5')
+        api.get('/reports/public-stats'),
+        api.get('/reports/recent?limit=5')
       ])
 
       setStats(statsResponse.data)
-      setRecentReports(reportsResponse.data.reports || reportsResponse.data)
+      setRecentReports(reportsResponse.data || [])
     } catch (error) {
       console.error('Erro ao carregar dados do dashboard:', error)
+      // Set fallback data if API fails
+      setStats({
+        totalReports: 0,
+        pendingReports: 0,
+        completedReports: 0,
+        myReports: 0
+      })
+      setRecentReports([])
     } finally {
       setIsLoading(false)
     }

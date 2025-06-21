@@ -98,18 +98,18 @@ export default function MapPage() {
     
     setFilteredReports(filtered)
   }, [reports, filters])
-
   const fetchReports = async () => {
     setIsLoading(true)
     try {
-      const response = await api.get('/reports?hasLocation=true&limit=1000')
-      const reportsData = response.data.reports || response.data
+      const response = await api.get('/reports/map')
+      const reportsData = response.data || []
       const reportsWithLocation = reportsData.filter((report: Report) => 
         report.latitude && report.longitude
       )
       setReports(reportsWithLocation)
     } catch (error) {
       console.error('Erro ao carregar denúncias:', error)
+      setReports([])
     } finally {
       setIsLoading(false)
     }

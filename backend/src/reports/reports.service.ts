@@ -188,11 +188,11 @@ export class ReportsService {
 
     return { message: 'Relatório deletado com sucesso' };
   }
-
   async getMapData() {
     const reports = await this.prisma.report.findMany({
       select: {
         id: true,
+        title: true,
         latitude: true,
         longitude: true,
         category: true,
@@ -260,6 +260,104 @@ export class ReportsService {
         priority: stat.priority,
         count: stat._count.priority,
       })),
+    };
+  }
+
+  async getPublicStats() {
+    const [
+      totalReports,
+      pendingReports,
+      completedReports,
+    ] = await Promise.all([
+      this.prisma.report.count(),
+      this.prisma.report.count({ where: { status: 'PENDING' } }),
+      this.prisma.report.count({ where: { status: 'RESOLVED' } }),
+    ]);
+
+    return {
+      totalReports,
+      pendingReports,
+      completedReports,
+    };
+  }
+
+  async getRecentReports(limit: number = 10) {
+    const reports = await this.prisma.report.findMany({
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return reports;
+  }
+
+  async findAllPublic(filters: ReportFilterDto) {
+    const { status, category, priority, page = 1, limit = 10, search } = filters;
+    const skip = (page - 1) * limit;
+
+    const where: any = {
+      status: {
+        not: 'REJECTED', // Don't show rejected reports to public
+      },
+    };
+
+    if (status) {
+      where.status = status;
+    }
+
+    if (category) {
+      where.category = category;
+    }
+
+    if (priority) {
+      where.priority = priority;
+    }
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { category: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [reports, total] = await Promise.all([
+      this.prisma.report.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.report.count({ where }),
+    ]);
+
+    return {
+      reports,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 }

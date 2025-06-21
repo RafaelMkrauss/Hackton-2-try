@@ -49,11 +49,11 @@ export function Header() {
                 onClick={() => router.push('/dashboard')}
                 className="flex items-center space-x-2 hover:opacity-80 transition-opacity focus:ring-2 focus:ring-blue-300 rounded-lg p-1"
                 aria-label="Ir para página inicial"
-              >
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">CR</span>
-                </div>
-                <h1 className="text-xl font-bold text-blue-600">CidadeReport</h1>
+              >                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">BS</span>
+                </div>                <h1 className="text-xl font-bold text-blue-600">
+                  Brasíl<span className="text-cyan-400">IA</span> Segura
+                </h1>
               </button>
             </div>
             

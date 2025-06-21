@@ -34,9 +34,11 @@ interface Report {
 
 interface ReportsResponse {
   reports: Report[]
-  total: number
-  page: number
-  totalPages: number
+  pagination: {
+    total: number
+    page: number
+    totalPages: number
+  }
 }
 
 export default function ReportsPage() {
@@ -85,8 +87,7 @@ export default function ReportsPage() {
 
   const fetchReports = async () => {
     setIsLoading(true)
-    try {
-      const params = new URLSearchParams({
+    try {      const params = new URLSearchParams({
         page: pagination.page.toString(),
         limit: '10',
         ...(filters.search && { search: filters.search }),
@@ -94,15 +95,15 @@ export default function ReportsPage() {
         ...(filters.status && { status: filters.status }),
         ...(filters.location && { location: filters.location })
       })
-
-      const response = await api.get(`/reports?${params}`)
+      
+      const response = await api.get(`/reports/public?${params}`)
       const data: ReportsResponse = response.data
 
       setReports(data.reports || [])
       setPagination({
-        page: data.page || 1,
-        totalPages: data.totalPages || 1,
-        total: data.total || 0
+        page: data.pagination?.page || 1,
+        totalPages: data.pagination?.totalPages || 1,
+        total: data.pagination?.total || 0
       })
     } catch (error) {
       console.error('Erro ao carregar denúncias:', error)
