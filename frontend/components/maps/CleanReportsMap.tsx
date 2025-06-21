@@ -221,22 +221,11 @@ export function GlobalReportsMap({
       {/* Empty State */}
       {mapState.isLoaded && reports.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
-          <p className="text-white text-center">
-            📍 Nenhum relatório encontrado<br />
+          <p className="text-white text-center">            📍 Nenhum relatório encontrado<br />
             <span className="text-sm opacity-75">Crie um novo relatório para vê-lo no mapa</span>
           </p>
         </div>
       )}
-
-      {/* Debug Panel */}
-      <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs p-2 rounded">
-        <div>Status: {mapState.isLoaded ? '✅ Carregado' : '⏳ Carregando'}</div>
-        <div>Google: {(window as any).google ? '✅' : '❌'}</div>
-        <div>Maps: {(window as any).google?.maps ? '✅' : '❌'}</div>
-        <div>Script Global: ✅</div>
-        <div>Relatórios: {reports.length}</div>
-        <div>Container: {mapRef.current ? '✅' : '❌'}</div>
-      </div>
     </div>
   )
 }
