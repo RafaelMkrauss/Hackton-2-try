@@ -28,21 +28,21 @@ interface CategoryRating {
 
 interface CurrentEvaluation {
   id: string;
-  semester: number;
+  trimester: number;
   year: number;
   ratings: CategoryRating[];
   generalComment?: string;
 }
 
-interface CurrentSemester {
+interface CurrentTrimester {
   year: number;
-  semester: number;
+  trimester: number;
 }
 
-export default function SemestralEvaluationPage() {
+export default function TrimestralEvaluationPage() {
   const { user } = useAuth()
   const router = useRouter()
-  const [currentSemester, setCurrentSemester] = useState<CurrentSemester | null>(null)
+  const [currentTrimester, setCurrentTrimester] = useState<CurrentTrimester | null>(null)
   const [existingEvaluation, setExistingEvaluation] = useState<CurrentEvaluation | null>(null)
   const [ratings, setRatings] = useState<CategoryRating[]>([])
   const [generalComment, setGeneralComment] = useState('')
@@ -50,34 +50,44 @@ export default function SemestralEvaluationPage() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showAccessibilityHelp, setShowAccessibilityHelp] = useState(false)
   const [ratingMethod, setRatingMethod] = useState<'stars' | 'buttons'>('stars')
-
   useEffect(() => {
     if (!user) {
       router.push('/login')
       return
     }
     
-    fetchCurrentSemester()
+    fetchCurrentTrimester()
     fetchCurrentEvaluation()
   }, [user])
 
-  const fetchCurrentSemester = async () => {
-    try {
-      const response = await api.get('/evaluations/current-semester')
-      setCurrentSemester(response.data)
-    } catch (error) {
-      console.error('Erro ao buscar semestre atual:', error)
-    }
+  const fetchCurrentTrimester = async () => {
+    // Calculate current trimester based on current date
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1; // getMonth() returns 0-11
+    const trimester = Math.ceil(month / 3);
+    
+    setCurrentTrimester({ year, trimester });
   }
 
   const fetchCurrentEvaluation = async () => {
     try {
-      const response = await api.get('/evaluations/current')
-      if (response.data) {
-        setExistingEvaluation(response.data)
-        setRatings(response.data.ratings)
-        setGeneralComment(response.data.generalComment || '')
-        setIsSubmitted(true)
+      const response = await api.get('/gamification/stats')
+      if (response.data && !response.data.needsEvaluation) {
+        // User has already completed current evaluation
+        // Try to fetch the evaluation details
+        try {
+          const evalResponse = await api.get('/evaluations/current')
+          if (evalResponse.data) {
+            setExistingEvaluation(evalResponse.data)
+            setRatings(evalResponse.data.ratings)
+            setGeneralComment(evalResponse.data.generalComment || '')
+            setIsSubmitted(true)
+          }
+        } catch (error) {
+          // Evaluation exists but couldn't fetch details
+          setIsSubmitted(true)
+        }
       } else {
         // Initialize with empty ratings
         setRatings(REPORT_CATEGORIES.map(category => ({
@@ -87,7 +97,7 @@ export default function SemestralEvaluationPage() {
         })))
       }
     } catch (error) {
-      // No existing evaluation, initialize empty
+      // Initialize empty ratings
       setRatings(REPORT_CATEGORIES.map(category => ({
         category,
         rating: 0,
@@ -116,10 +126,8 @@ export default function SemestralEvaluationPage() {
     if (unratedCategories.length > 0) {
       toast.error('Por favor, avalie todas as categorias')
       return
-    }
-
-    if (!currentSemester) {
-      toast.error('Erro ao identificar semestre atual')
+    }    if (!currentTrimester) {
+      toast.error('Erro ao identificar trimestre atual')
       return
     }
 
@@ -127,17 +135,17 @@ export default function SemestralEvaluationPage() {
 
     try {
       const evaluationData = {
-        semester: currentSemester.semester,
-        year: currentSemester.year,
+        trimester: currentTrimester.trimester,
+        year: currentTrimester.year,
         ratings: ratings.filter(r => r.rating > 0),
         generalComment: generalComment.trim() || undefined
       }
 
       if (existingEvaluation) {
-        await api.patch(`/evaluations/${existingEvaluation.id}`, evaluationData)
+        await api.patch(`/gamification/evaluations/${existingEvaluation.id}`, evaluationData)
         toast.success('Avaliação atualizada com sucesso!')
       } else {
-        await api.post('/evaluations', evaluationData)
+        await api.post('/gamification/trimestral-evaluation', evaluationData)
         toast.success('Avaliação enviada com sucesso!')
       }
 
@@ -178,8 +186,7 @@ export default function SemestralEvaluationPage() {
       </div>
     )
   }
-
-  if (!currentSemester) {
+  if (!currentTrimester) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -189,6 +196,16 @@ export default function SemestralEvaluationPage() {
       </div>
     )
   }
+
+  const getTrimesterName = (trimester: number) => {
+    const names = {
+      1: '1º Trimestre',
+      2: '2º Trimestre', 
+      3: '3º Trimestre',
+      4: '4º Trimestre'
+    };
+    return names[trimester as keyof typeof names] || `${trimester}º Trimestre`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -205,7 +222,7 @@ export default function SemestralEvaluationPage() {
           
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Avaliação Semestral - {currentSemester.semester}º Semestre {currentSemester.year}
+              Avaliação Trimestral - {getTrimesterName(currentTrimester.trimester)} {currentTrimester.year}
             </h1>
             <p className="text-gray-600">
               Avalie a qualidade dos serviços públicos da sua região nos últimos meses.

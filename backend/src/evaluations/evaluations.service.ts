@@ -6,28 +6,36 @@ import { CreateSemestralEvaluationDto, UpdateSemestralEvaluationDto } from './dt
 export class EvaluationsService {
   constructor(private prisma: PrismaService) {}
 
+  // Convert semester (1, 2) to trimester (1, 2, 3, 4)
+  private semesterToTrimester(semester: number): number {
+    return semester === 1 ? 1 : 3; // First semester = Q1, Second semester = Q3
+  }
+
   async create(userId: string, createEvaluationDto: CreateSemestralEvaluationDto) {
     const { semester, year, ratings, generalComment } = createEvaluationDto;
 
-    // Check if evaluation already exists for this user, semester, and year
-    const existingEvaluation = await this.prisma.semestralEvaluation.findUnique({
+    // Convert semester to trimester
+    const trimester = this.semesterToTrimester(semester);
+
+    // Check if evaluation already exists for this user, trimester, and year
+    const existingEvaluation = await this.prisma.trimestralEvaluation.findUnique({
       where: {
-        userId_semester_year: {
+        userId_trimester_year: {
           userId,
-          semester,
+          trimester,
           year,
         },
       },
     });
 
     if (existingEvaluation) {
-      throw new ConflictException('Avaliação para este semestre já existe');
+      throw new ConflictException('Avaliação para este período já existe');
     }
 
-    return this.prisma.semestralEvaluation.create({
+    return this.prisma.trimestralEvaluation.create({
       data: {
         userId,
-        semester,
+        trimester,
         year,
         generalComment,
         ratings: {
@@ -46,22 +54,21 @@ export class EvaluationsService {
       },
     });
   }
-
   async findByUser(userId: string) {
-    return this.prisma.semestralEvaluation.findMany({
+    return this.prisma.trimestralEvaluation.findMany({
       where: { userId },
       include: {
         ratings: true,
       },
       orderBy: [
         { year: 'desc' },
-        { semester: 'desc' },
+        { trimester: 'desc' },
       ],
     });
   }
 
   async findOne(id: string, userId?: string) {
-    const evaluation = await this.prisma.semestralEvaluation.findUnique({
+    const evaluation = await this.prisma.trimestralEvaluation.findUnique({
       where: { id },
       include: {
         ratings: true,
@@ -88,12 +95,10 @@ export class EvaluationsService {
   }
 
   async update(id: string, userId: string, updateEvaluationDto: UpdateSemestralEvaluationDto) {
-    const evaluation = await this.findOne(id, userId);
-
-    const { ratings, generalComment } = updateEvaluationDto;
+    const evaluation = await this.findOne(id, userId);    const { ratings, generalComment } = updateEvaluationDto;
 
     // Update the evaluation
-    const updatedEvaluation = await this.prisma.semestralEvaluation.update({
+    const updatedEvaluation = await this.prisma.trimestralEvaluation.update({
       where: { id },
       data: {
         generalComment,
@@ -125,7 +130,7 @@ export class EvaluationsService {
   async remove(id: string, userId: string) {
     await this.findOne(id, userId);
 
-    return this.prisma.semestralEvaluation.delete({
+    return this.prisma.trimestralEvaluation.delete({
       where: { id },
     });
   }
@@ -138,15 +143,15 @@ export class EvaluationsService {
 
     return { year, semester };
   }
-
   async getCurrentUserEvaluation(userId: string) {
     const { year, semester } = await this.getCurrentSemester();
+    const trimester = this.semesterToTrimester(semester);
 
-    return this.prisma.semestralEvaluation.findUnique({
+    return this.prisma.trimestralEvaluation.findUnique({
       where: {
-        userId_semester_year: {
+        userId_trimester_year: {
           userId,
-          semester,
+          trimester,
           year,
         },
       },
@@ -180,12 +185,13 @@ export class EvaluationsService {
 
     // Get latest evaluations from users in the area
     const { year, semester } = await this.getCurrentSemester();
+    const trimester = this.semesterToTrimester(semester);
 
-    const evaluations = await this.prisma.semestralEvaluation.findMany({
+    const evaluations = await this.prisma.trimestralEvaluation.findMany({
       where: {
         userId: { in: userIds },
         year,
-        semester,
+        trimester,
       },
       include: {
         ratings: true,
@@ -217,7 +223,7 @@ export class EvaluationsService {
       totalUsersInArea: userIds.length,
       participationRate: (evaluations.length / userIds.length) * 100,
       categoryAverages,
-      semester,
+      trimester,
       year,
     };
   }

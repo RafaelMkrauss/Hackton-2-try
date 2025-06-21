@@ -11,20 +11,22 @@ datasource db {
 }
 
 model User {
-    id           String                @id @default(cuid())
-    email        String?               @unique
+    id           String                 @id @default(cuid())
+    email        String?                @unique
     password     String?
     name         String?
-    role         String                @default("USER") // USER, STAFF, ADMIN
-    isActive     Boolean               @default(true)
+    role         String                 @default("USER") // USER, STAFF, ADMIN
+    isActive     Boolean                @default(true)
     address      String?
     latitude     Float?
     longitude    Float?
     neighborhood String?
     reports      Report[]
-    evaluations  SemestralEvaluation[]
-    createdAt    DateTime              @default(now())
-    updatedAt    DateTime              @updatedAt
+    evaluations  TrimestralEvaluation[]
+    activities   UserActivity[]
+    quickAnswers QuickAnswer[]
+    createdAt    DateTime               @default(now())
+    updatedAt    DateTime               @updatedAt
 
     @@map("users")
 }
@@ -61,29 +63,65 @@ model Notification {
     @@map("notifications")
 }
 
-model SemestralEvaluation {
+model TrimestralEvaluation {
     id             String           @id @default(cuid())
     user           User             @relation(fields: [userId], references: [id])
     userId         String
-    semester       Int // 1 or 2
+    trimester      Int // 1, 2, 3, or 4
     year           Int
     ratings        CategoryRating[]
     generalComment String?
     createdAt      DateTime         @default(now())
     updatedAt      DateTime         @updatedAt
 
-    @@unique([userId, semester, year])
-    @@map("semestral_evaluations")
+    @@unique([userId, trimester, year])
+    @@map("trimestral_evaluations")
 }
 
 model CategoryRating {
-    id           String              @id @default(cuid())
-    evaluation   SemestralEvaluation @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
+    id           String               @id @default(cuid())
+    evaluation   TrimestralEvaluation @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
     evaluationId String
     category     String // Same categories as Report model
     rating       Int // 1-5 scale
     comment      String?
-    createdAt    DateTime            @default(now())
+    createdAt    DateTime             @default(now())
 
     @@map("category_ratings")
+}
+
+// Gamification Models
+model GamificationQuestion {
+    id           String        @id @default(cuid())
+    question     String
+    category     String? // Optional category for organizing questions
+    isActive     Boolean       @default(true)
+    quickAnswers QuickAnswer[]
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime      @updatedAt
+
+    @@map("gamification_questions")
+}
+
+model QuickAnswer {
+    id         String               @id @default(cuid())
+    user       User                 @relation(fields: [userId], references: [id])
+    userId     String
+    question   GamificationQuestion @relation(fields: [questionId], references: [id])
+    questionId String
+    answer     Boolean // true for yes, false for no
+    createdAt  DateTime             @default(now())
+
+    @@map("quick_answers")
+}
+
+model UserActivity {
+    id           String   @id @default(cuid())
+    user         User     @relation(fields: [userId], references: [id])
+    userId       String
+    activityType String // REPORT_CREATED, QUICK_ANSWER, EVALUATION_COMPLETED, LOGIN
+    date         DateTime @default(now())
+    metadata     String? // JSON string for additional data
+
+    @@map("user_activities")
 }

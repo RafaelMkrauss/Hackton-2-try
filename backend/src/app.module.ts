@@ -9,6 +9,7 @@ import { UploadsModule } from './uploads/uploads.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { WebSocketModule } from './websocket/websocket.module';
 import { EvaluationsModule } from './evaluations/evaluations.module';
+import { GamificationModule } from './gamification/gamification.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { EvaluationsModule } from './evaluations/evaluations.module';
     NotificationsModule,
     WebSocketModule,
     EvaluationsModule,
+    GamificationModule,
   ],
 })
 export class AppModule {}

@@ -20,6 +20,9 @@ import {
   EyeIcon,
   MessageSquareIcon
 } from 'lucide-react'
+import { QuickAnswerWidget } from '@/components/gamification/QuickAnswerWidget'
+import { ActivityCalendar } from '@/components/gamification/ActivityCalendar'
+import { GamificationStats } from '@/components/gamification/GamificationStats'
 
 interface DashboardStats {
   totalReports: number
@@ -156,7 +159,18 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">        {/* Stats Grid */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Gamification Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="lg:col-span-2">
+            <QuickAnswerWidget />
+          </div>
+          <div>
+            <GamificationStats />
+          </div>
+        </div>
+
+        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500">
             <div className="flex items-center">
@@ -225,7 +239,7 @@ export default function DashboardPage() {
             <TrendingUpIcon className="w-5 h-5 mr-2 text-blue-600" />
             ⚡ Ações Rápidas
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             <button
               onClick={() => router.push('/reports/new')}
               className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all transform hover:scale-105 text-left focus:ring-2 focus:ring-blue-300"
@@ -271,6 +285,21 @@ export default function DashboardPage() {
                   <h3 className="text-lg font-semibold">🗺️ Ver no Mapa</h3>
                   <p className="text-sm opacity-90">Localização dos problemas</p>
                 </div>
+              </div>            </button>
+
+            <button
+              onClick={() => router.push('/evaluation')}
+              className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all transform hover:scale-105 text-left focus:ring-2 focus:ring-indigo-300"
+              aria-label="Avaliação trimestral"
+            >
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-white bg-opacity-20 rounded-lg">
+                  <CheckCircleIcon className="w-6 h-6" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-lg font-semibold">📊 Avaliação</h3>
+                  <p className="text-sm opacity-90">Avalie os serviços</p>
+                </div>
               </div>
             </button>
 
@@ -287,54 +316,64 @@ export default function DashboardPage() {
                   <h3 className="text-lg font-semibold">❓ Ajuda</h3>
                   <p className="text-sm opacity-90">Como usar a plataforma</p>
                 </div>
-              </div>            </button>
-          </div>
-        </div>
-
-        {/* Recent Reports */}
-        <div className="bg-white rounded-lg shadow-md">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900 flex items-center">
-              <ClockIcon className="w-5 h-5 mr-2 text-gray-600" />
-              📋 Denúncias Recentes
-            </h2>
-          </div>
-          <div className="divide-y divide-gray-200">
-            {recentReports.length > 0 ? (
-              recentReports.map((report) => (
-                <div key={report.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-sm font-medium text-gray-900">{report.title}</h3>
-                      <p className="text-sm text-gray-600 flex items-center mt-1">
-                        <span className="mr-2">🏷️</span>
-                        {report.category}
-                      </p>
-                      <p className="text-xs text-gray-500 flex items-center mt-1">
-                        <span className="mr-2">📅</span>
-                        {new Date(report.createdAt).toLocaleDateString('pt-BR')}
-                      </p>
-                    </div>                    <div className="flex items-center">
-                      <AccessibleStatusBadge 
-                        status={report.status} 
-                        size="md"
-                        showIcon={true}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="px-6 py-8 text-center">
-                <div className="text-gray-400 mb-2">
-                  <MessageSquareIcon className="w-12 h-12 mx-auto" />
-                </div>
-                <p className="text-gray-500 font-medium">📋 Nenhuma denúncia encontrada</p>
-                <p className="text-gray-400 text-sm mt-1">
-                  Quando você ou outros usuários criarem denúncias, elas aparecerão aqui
-                </p>
               </div>
-            )}
+            </button>
+          </div>        </div>
+
+        {/* Calendar and Recent Reports */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1">
+            <ActivityCalendar />
+          </div>
+          
+          <div className="lg:col-span-2">
+            {/* Recent Reports */}
+            <div className="bg-white rounded-lg shadow-md">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h2 className="text-lg font-medium text-gray-900 flex items-center">
+                  <ClockIcon className="w-5 h-5 mr-2 text-gray-600" />
+                  📋 Denúncias Recentes
+                </h2>
+              </div>
+              <div className="divide-y divide-gray-200">
+                {recentReports.length > 0 ? (
+                  recentReports.map((report) => (
+                    <div key={report.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="text-sm font-medium text-gray-900">{report.title}</h3>
+                          <p className="text-sm text-gray-600 flex items-center mt-1">
+                            <span className="mr-2">🏷️</span>
+                            {report.category}
+                          </p>
+                          <p className="text-xs text-gray-500 flex items-center mt-1">
+                            <span className="mr-2">📅</span>
+                            {new Date(report.createdAt).toLocaleDateString('pt-BR')}
+                          </p>
+                        </div>
+                        <div className="flex items-center">
+                          <AccessibleStatusBadge 
+                            status={report.status} 
+                            size="md"
+                            showIcon={true}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-6 py-8 text-center">
+                    <div className="text-gray-400 mb-2">
+                      <MessageSquareIcon className="w-12 h-12 mx-auto" />
+                    </div>
+                    <p className="text-gray-500 font-medium">📋 Nenhuma denúncia encontrada</p>
+                    <p className="text-gray-400 text-sm mt-1">
+                      Quando você ou outros usuários criarem denúncias, elas aparecerão aqui
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </main>
