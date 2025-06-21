@@ -35,11 +35,10 @@ export function GamificationStats({ className = '' }: GamificationStatsProps) {
   if (!userStats) {
     return null;
   }
-
   const stats = [
     {
       icon: FlameIcon,
-      label: 'Streak Atual',
+      label: 'Sequência Atual',
       value: userStats.currentStreak,
       suffix: userStats.currentStreak === 1 ? 'dia' : 'dias',
       color: 'text-orange-600',
@@ -47,7 +46,7 @@ export function GamificationStats({ className = '' }: GamificationStatsProps) {
     },
     {
       icon: TrophyIcon,
-      label: 'Maior Streak',
+      label: 'Maior Sequência',
       value: userStats.longestStreak,
       suffix: userStats.longestStreak === 1 ? 'dia' : 'dias',
       color: 'text-yellow-600',
@@ -70,28 +69,27 @@ export function GamificationStats({ className = '' }: GamificationStatsProps) {
       bg: 'bg-green-100'
     }
   ];
-
   return (
-    <div className={`bg-white border border-gray-200 rounded-lg p-4 ${className}`}>
-      <div className="flex items-center gap-2 mb-4">
-        <TrendingUpIcon className="w-5 h-5 text-gray-600" />
-        <h3 className="font-medium text-gray-900">Suas Estatísticas</h3>
+    <div className={`bg-white border border-gray-200 rounded-lg p-3 sm:p-4 ${className}`}>
+      <div className="flex items-center gap-2 mb-3 sm:mb-4">
+        <TrendingUpIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+        <h3 className="text-sm sm:text-base font-medium text-gray-900">Suas Estatísticas</h3>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-4">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <div
               key={index}
-              className="bg-gray-50 rounded-lg p-3 text-center"
+              className="bg-gray-50 rounded-lg p-2 sm:p-3 text-center"
             >
-              <div className={`inline-flex items-center justify-center w-8 h-8 rounded-lg ${stat.bg} mb-2`}>
-                <Icon className={`w-4 h-4 ${stat.color}`} />
+              <div className={`inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-lg ${stat.bg} mb-1 sm:mb-2`}>
+                <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${stat.color}`} />
               </div>
-              <div className="text-lg font-bold text-gray-900">{stat.value}</div>
+              <div className="text-base sm:text-lg font-bold text-gray-900">{stat.value}</div>
               <div className="text-xs text-gray-600">{stat.suffix}</div>
-              <div className="text-xs text-gray-500 mt-1">{stat.label}</div>
+              <div className="text-xs text-gray-500 mt-1 leading-tight">{stat.label}</div>
             </div>
           );
         })}
