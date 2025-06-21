@@ -4,8 +4,20 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth/AuthContext'
 import { api } from '@/lib/api'
-import { REPORT_CATEGORIES, CATEGORY_DESCRIPTIONS } from '@/lib/constants/categories'
-import { Star, CheckCircle, ArrowLeft } from 'lucide-react'
+import { REPORT_CATEGORIES, CATEGORY_CONFIG, CATEGORY_DESCRIPTIONS } from '@/lib/constants/categories'
+import { AccessibleRating } from '@/components/forms/AccessibleRating'
+import { 
+  Star, 
+  CheckCircle, 
+  ArrowLeft, 
+  InfoIcon,
+  MessageSquareIcon,
+  StarIcon,
+  EyeIcon,
+  ThumbsUpIcon,
+  ThumbsDownIcon,
+  SettingsIcon
+} from 'lucide-react'
 import toast from 'react-hot-toast'
 
 interface CategoryRating {
@@ -36,6 +48,8 @@ export default function SemestralEvaluationPage() {
   const [generalComment, setGeneralComment] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [showAccessibilityHelp, setShowAccessibilityHelp] = useState(false)
+  const [ratingMethod, setRatingMethod] = useState<'stars' | 'buttons'>('stars')
 
   useEffect(() => {
     if (!user) {
