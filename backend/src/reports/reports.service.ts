@@ -1,11 +1,15 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReportDto, UpdateReportStatusDto, ReportFilterDto } from './dto/report.dto';
+import { GamificationService } from '../gamification/gamification.service';
 
 @Injectable()
 export class ReportsService {
-  constructor(private prisma: PrismaService) {}
-
+  constructor(
+    private prisma: PrismaService,
+    @Inject(forwardRef(() => GamificationService))
+    private gamificationService: GamificationService
+  ) {}
   async create(createReportDto: CreateReportDto, userId?: string) {
     const report = await this.prisma.report.create({
       data: {
@@ -23,6 +27,20 @@ export class ReportsService {
         },
       },
     });
+
+    // Record user activity if user is logged in
+    if (userId) {
+      try {
+        await this.gamificationService.recordUserActivity(
+          userId, 
+          'REPORT_CREATED', 
+          { reportId: report.id, category: report.category }
+        );
+      } catch (error) {
+        console.error('Error recording user activity:', error);
+        // Don't fail the report creation if activity recording fails
+      }
+    }
 
     return report;
   }

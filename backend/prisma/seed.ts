@@ -113,12 +113,62 @@ async function main() {
       type: 'report_update',
     },
   ];
-
   for (const notificationData of notifications) {
     const notification = await prisma.notification.create({
       data: notificationData,
     });
     console.log(`🔔 Notificação criada: ${notification.title}`);
+  }
+
+  // Criar perguntas de gamificação
+  const gamificationQuestions = [
+    {
+      question: 'Você está satisfeito com a iluminação pública da sua região?',
+      category: 'Infraestrutura'
+    },
+    {
+      question: 'As ruas do seu bairro estão em bom estado de conservação?',
+      category: 'Infraestrutura'
+    },
+    {
+      question: 'O sistema de coleta de lixo funciona adequadamente na sua área?',
+      category: 'Limpeza'
+    },
+    {
+      question: 'Você se sente seguro caminhando no seu bairro durante o dia?',
+      category: 'Segurança'
+    },
+    {
+      question: 'Os semáforos e sinalizações estão funcionando corretamente?',
+      category: 'Trânsito'
+    },
+    {
+      question: 'Há áreas verdes suficientes no seu bairro?',
+      category: 'Meio Ambiente'
+    },
+    {
+      question: 'O transporte público atende às suas necessidades?',
+      category: 'Transporte'
+    },
+    {
+      question: 'Você considera que sua região tem boa acessibilidade para pessoas com deficiência?',
+      category: 'Acessibilidade'
+    },
+    {
+      question: 'Os postos de saúde da região atendem adequadamente a população?',
+      category: 'Saúde'
+    },
+    {
+      question: 'As escolas públicas da região oferecem ensino de qualidade?',
+      category: 'Educação'
+    }
+  ];
+
+  for (const questionData of gamificationQuestions) {
+    const question = await prisma.gamificationQuestion.create({
+      data: questionData,
+    });
+    console.log(`❓ Pergunta criada: ${question.question.substring(0, 50)}...`);
   }
 
   console.log('✅ Seed concluído com sucesso!');

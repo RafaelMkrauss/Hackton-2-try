@@ -122,7 +122,6 @@ export default function MapPage() {
     const statusConfig = statuses.find(s => s.value === status)
     return statusConfig?.color || '#6b7280'
   }
-
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case 'pendente':
@@ -135,10 +134,11 @@ export default function MapPage() {
         return <ClockIcon className="w-4 h-4" />
     }
   }
-
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }))
   }
+
+  // Early return for loading state
   if (loading || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -150,7 +150,7 @@ export default function MapPage() {
       </div>
     )
   }
-
+  // Main component render
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -197,36 +197,13 @@ export default function MapPage() {
                   📋 Lista
                 </button>
               </div>
-              
-              <button
+                <button
                 onClick={() => setShowAccessibilityPanel(!showAccessibilityPanel)}
                 className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg focus:ring-2 focus:ring-blue-300 transition-colors"
                 aria-label="Painel de acessibilidade"
                 aria-expanded={showAccessibilityPanel}
               >
                 <EyeIcon className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-                <h1 className="text-2xl font-bold text-gray-900">Mapa de Denúncias</h1>
-                <p className="text-gray-600">{filteredReports.length} denúncias encontradas</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={fetchReports}
-                className="p-2 text-gray-600 hover:text-gray-700"
-                title="Atualizar"
-              >
-                <RefreshCwIcon className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="text-blue-600 hover:text-blue-700"
-              >
-                Dashboard
               </button>
             </div>
           </div>
