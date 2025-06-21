@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 
 export interface GamificationQuestion {
@@ -64,8 +64,7 @@ export function useGamification() {
       throw error;
     }
   };
-
-  const getActivityCalendar = async (year: number, month: number) => {
+  const getActivityCalendar = useCallback(async (year: number, month: number) => {
     try {
       const response = await api.get(`/gamification/calendar/${year}/${month}`);
       return response.data as ActivityDay[];
@@ -73,7 +72,11 @@ export function useGamification() {
       console.error('Erro ao buscar calendário:', error);
       return [];
     }
-  };
+  }, []);
+
+  const refreshData = useCallback(async () => {
+    return Promise.all([fetchDailyQuestion(), fetchUserStats()]);
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -84,13 +87,12 @@ export function useGamification() {
 
     loadData();
   }, []);
-
   return {
     dailyQuestion,
     userStats,
     loading,
     submitQuickAnswer,
     getActivityCalendar,
-    refreshData: () => Promise.all([fetchDailyQuestion(), fetchUserStats()])
+    refreshData
   };
 }
