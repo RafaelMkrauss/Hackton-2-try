@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { DEFAULT_MAP_CENTER } from '@/lib/constants/maps'
 
 interface SimpleMapProps {
   className?: string
@@ -58,7 +59,7 @@ export function SimpleMap({ className = "w-full h-96" }: SimpleMapProps) {
     try {
       console.log('Initializing Google Maps...')
       const map = new google.maps.Map(mapRef.current, {
-        center: { lat: -23.5505, lng: -46.6333 }, // São Paulo
+        center: DEFAULT_MAP_CENTER, // Brasília
         zoom: 13,
         mapTypeControl: true,
         streetViewControl: true,
@@ -75,13 +76,11 @@ export function SimpleMap({ className = "w-full h-96" }: SimpleMapProps) {
 
       mapInstance.current = map
       setIsLoaded(true)
-      console.log('Google Maps initialized successfully')
-
-      // Add a marker to test
+      console.log('Google Maps initialized successfully')      // Add a marker to test
       new google.maps.Marker({
-        position: { lat: -23.5505, lng: -46.6333 },
+        position: DEFAULT_MAP_CENTER,
         map: map,
-        title: 'São Paulo',
+        title: 'Brasília',
         icon: {
           url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
             <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">

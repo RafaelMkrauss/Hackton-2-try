@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { DEFAULT_MAP_CENTER } from '@/lib/constants/maps'
 
 interface Location {
   lat: number
@@ -26,6 +27,8 @@ export function WorkingLocationPicker({
   const [isLoaded, setIsLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loadingMessage, setLoadingMessage] = useState('Carregando Google Maps...')
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(initialLocation || null)
+  const [isGeolocating, setIsGeolocating] = useState(false)
   
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
@@ -131,7 +134,7 @@ export function WorkingLocationPicker({
     try {
       console.log('Initializing WorkingLocationPicker...')
       
-      const center = initialLocation || { lat: -23.5505, lng: -46.6333 } // São Paulo default
+      const center = initialLocation || DEFAULT_MAP_CENTER // Use default center from constants
       
       const map = new google.maps.Map(mapRef.current, {
         center,

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { DEFAULT_MAP_CENTER } from '@/lib/constants/maps'
 
 interface Report {
   id: string
@@ -134,7 +135,7 @@ export function SimpleReportsMap({
         console.log('Initializing Google Map...')
         
         const map = new google.maps.Map(mapRef.current, {
-          center: { lat: -23.5505, lng: -46.6333 }, // São Paulo
+          center: { lat: -15.7942, lng: -47.8822 }, // Brasília
           zoom: 12,
           mapTypeControl: true,
           streetViewControl: true,

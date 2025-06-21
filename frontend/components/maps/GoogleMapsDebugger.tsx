@@ -57,7 +57,7 @@ export function GoogleMapsDebugger() {
         document.body.appendChild(testDiv)
 
         const map = new google.maps.Map(testDiv, {
-          center: { lat: -23.5505, lng: -46.6333 },
+          center: { lat: -15.7942, lng: -47.8822 }, // Brasília
           zoom: 10
         })
 

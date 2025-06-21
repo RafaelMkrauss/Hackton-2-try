@@ -43,7 +43,7 @@ export function SimpleTestMap() {
         console.log('Container preparado, criando mapa...')
         
         const map = new (window as any).google.maps.Map(container, {
-          center: { lat: -23.5505, lng: -46.6333 },
+          center: { lat: -15.7942, lng: -47.8822 }, // Brasília
           zoom: 10,
           mapTypeId: 'roadmap'
         })
@@ -53,7 +53,7 @@ export function SimpleTestMap() {
         
         // Add a simple marker
         const marker = new (window as any).google.maps.Marker({
-          position: { lat: -23.5505, lng: -46.6333 },
+          position: { lat: -15.7942, lng: -47.8822 }, // Brasília
           map: map,
           title: 'Teste'
         })

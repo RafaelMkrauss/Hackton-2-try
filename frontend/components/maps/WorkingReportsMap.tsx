@@ -148,7 +148,7 @@ export function WorkingReportsMap({
       
       // Create map centered on São Paulo
       const map = new google.maps.Map(mapRef.current, {
-        center: { lat: -23.5505, lng: -46.6333 },
+        center: { lat: -15.7942, lng: -47.8822 }, // Brasília
         zoom: 12,
         mapTypeControl: true,
         streetViewControl: true,
