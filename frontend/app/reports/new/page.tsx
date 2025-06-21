@@ -262,27 +262,12 @@ export default function NewReportPage() {
                 <h3 className="text-lg font-medium text-blue-900">Localização do Problema</h3>
               </div>              
               {/* Working LocationPicker */}
-              <WorkingLocationPicker
-                onLocationSelect={(location) => {
-                  setFormData(prev => ({
-                    ...prev,
-                    latitude: location.lat,
-                    longitude: location.lng,
-                    location: location.address || prev.location
-                  }))
-                }}
-                initialLocation={
-                  formData.latitude && formData.longitude 
-                    ? { lat: formData.latitude, lng: formData.longitude }
-                    : undefined
-                }
-              />
+
+          
               
               {/* Fallback LocationPicker for comparison */}
-              <details className="mt-4">
-                <summary className="cursor-pointer text-sm text-blue-600 hover:text-blue-800">
-                  🔧 Teste LocationPicker original (se o mapa acima não funcionar)
-                </summary>
+         
+               
                 <div className="mt-2 p-4 bg-gray-50 rounded">
                   <LocationPicker
                     onLocationSelect={(location) => {
@@ -300,7 +285,7 @@ export default function NewReportPage() {
                     }
                   />
                 </div>
-              </details>
+             
             </div>            
             {formData.latitude && formData.longitude && (
               <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
