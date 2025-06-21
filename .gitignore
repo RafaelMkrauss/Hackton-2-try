@@ -111,3 +111,6 @@ temp/
 # Prisma
 prisma/migrations/
 !prisma/migrations/.gitkeep
+
+# Venv
+.venv
