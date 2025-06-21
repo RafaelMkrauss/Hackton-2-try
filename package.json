@@ -1,7 +1,7 @@
 {
-  "name": "hackaton-report-system",
+  "name": "brasilia-segura",
   "version": "1.0.0",
-  "description": "Complete web application for report management with React, Next.js, NestJS, and Google Maps",
+  "description": "Sistema completo de denúncias urbanas com inteligência artificial para tornar Brasília mais segura - React, Next.js, NestJS, e Google Maps",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",

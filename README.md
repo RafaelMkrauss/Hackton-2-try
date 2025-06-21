@@ -1,6 +1,6 @@
-# Sistema de Relatórios - Hackaton 2
+# BrasílIA Segura - Sistema de Denúncias Urbanas
 
-Uma aplicação web completa para gerenciamento de relatórios com integração ao Google Maps, construída com as melhores tecnologias modernas.
+Uma aplicação web completa para gerenciamento de denúncias urbanas com inteligência artificial, construída para tornar Brasília mais segura através da participação cidadã e integração ao Google Maps.
 
 ## 🚀 Tecnologias Utilizadas
 

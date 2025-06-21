@@ -29,7 +29,6 @@ export class ReportsController {
   ) {
     return this.reportsService.create(createReportDto, user?.id);
   }
-
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('STAFF', 'ADMIN')
@@ -37,9 +36,24 @@ export class ReportsController {
     return this.reportsService.findAll(filters);
   }
 
+  @Get('public')
+  async findAllPublic(@Query() filters: ReportFilterDto) {
+    return this.reportsService.findAllPublic(filters);
+  }
   @Get('map')
   async getMapData() {
     return this.reportsService.getMapData();
+  }
+
+  @Get('public-stats')
+  async getPublicStats() {
+    return this.reportsService.getPublicStats();
+  }
+
+  @Get('recent')
+  async getRecentReports(@Query('limit') limit?: string) {
+    const limitNum = limit ? parseInt(limit) : 10;
+    return this.reportsService.getRecentReports(limitNum);
   }
 
   @Get('stats')

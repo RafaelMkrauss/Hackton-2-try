@@ -8,12 +8,12 @@ import { Header } from '@/components/layout/Header'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'CidadeReport - Sistema de Denúncias Urbanas Acessível',
+  title: 'BrasílIA Segura - Sistema de Denúncias Urbanas Acessível',
   description: 'Sistema completo e acessível para gerenciamento de denúncias urbanas com localização e acompanhamento em tempo real. Projetado para todos os usuários, incluindo pessoas com deficiência.',
-  keywords: 'denúncias, urbano, cidade, relatórios, gestão, acessibilidade, inclusivo, PCD',
+  keywords: 'denúncias, urbano, cidade, relatórios, gestão, acessibilidade, inclusivo, PCD, inteligência artificial, IA',
   openGraph: {
-    title: 'CidadeReport - Denúncias Urbanas Acessíveis',
-    description: 'Plataforma inclusiva para reportar problemas urbanos',
+    title: 'BrasílIA Segura - Denúncias Urbanas Acessíveis',
+    description: 'Plataforma inclusiva para reportar problemas urbanos com inteligência artificial',
     type: 'website',
   },
   robots: 'index, follow',

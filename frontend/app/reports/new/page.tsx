@@ -77,35 +77,35 @@ export default function NewReportPage() {
     setImages(prev => prev.filter((_, i) => i !== index))
     setImagePreviews(prev => prev.filter((_, i) => i !== index))
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     setError('')
 
     try {
-      // Create FormData for file upload
-      const submitData = new FormData()
-      submitData.append('title', formData.title)
-      submitData.append('description', formData.description)
-      submitData.append('category', formData.category)
-      submitData.append('location', formData.location)
-      
-      if (formData.latitude) {
-        submitData.append('latitude', formData.latitude.toString())
-      }
-      if (formData.longitude) {
-        submitData.append('longitude', formData.longitude.toString())
+      // Validate required fields
+      if (!formData.title || !formData.description || !formData.category || !formData.location) {
+        setError('Por favor, preencha todos os campos obrigatórios')
+        return
       }
 
-      // Add images
-      images.forEach((image, index) => {
-        submitData.append('images', image)
-      })
+      if (!formData.latitude || !formData.longitude) {
+        setError('Por favor, selecione uma localização no mapa')
+        return
+      }      // Create the report data
+      const reportData = {
+        title: formData.title,
+        category: formData.category,
+        description: formData.description,
+        latitude: Number(formData.latitude),
+        longitude: Number(formData.longitude),
+        address: formData.location,
+        photoUrl: null // For now, we'll handle file upload separately if needed
+      }
 
-      await api.post('/reports', submitData, {
+      const response = await api.post('/reports', reportData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'application/json'
         }
       })
 
@@ -114,6 +114,7 @@ export default function NewReportPage() {
         router.push('/dashboard')
       }, 2000)
     } catch (err: any) {
+      console.error('Error creating report:', err)
       setError(err.response?.data?.message || 'Erro ao criar denúncia')
     } finally {
       setIsSubmitting(false)

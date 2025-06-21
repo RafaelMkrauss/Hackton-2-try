@@ -1,7 +1,7 @@
 {
-  "name": "backend",
+  "name": "brasilia-segura-backend",
   "version": "0.0.1",
-  "description": "NestJS backend for report management system",
+  "description": "NestJS backend for BrasílIA Segura urban report management system with AI",
   "author": "Rafael",
   "private": true,
   "license": "MIT",

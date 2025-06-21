@@ -11,10 +11,11 @@ export function LandingPageSimple() {
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+          <div className="flex justify-between items-center h-16">            <div className="flex items-center">
               <MapPinIcon className="w-8 h-8 text-blue-600 mr-2" />
-              <span className="text-xl font-bold text-gray-900">CidadeReport</span>
+              <span className="text-xl font-bold text-gray-900">
+                Brasíl<span className="text-cyan-500">IA</span> Segura
+              </span>
             </div>
             <div className="flex items-center space-x-4">
               <button
@@ -63,13 +64,12 @@ export function LandingPageSimple() {
       {/* Features Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Por que usar o CidadeReport?
+          <div className="text-center mb-16">            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Por que usar o Brasíl<span className="text-cyan-500">IA</span> Segura?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Nossa plataforma oferece ferramentas modernas para facilitar 
-              a comunicação entre cidadãos e administração pública.
+              Nossa plataforma oferece ferramentas modernas com inteligência artificial para facilitar 
+              a comunicação entre cidadãos e administração pública, tornando Brasília mais segura.
             </p>
           </div>
         </div>

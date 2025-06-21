@@ -1,6 +1,10 @@
 import { IsString, IsNumber, IsOptional, IsEnum, MinLength } from 'class-validator';
 
 export class CreateReportDto {
+  @IsOptional()
+  @IsString({ message: 'Título deve ser uma string' })
+  title?: string;
+
   @IsString({ message: 'Categoria deve ser uma string' })
   category: string;
 
@@ -50,7 +54,6 @@ export class ReportFilterDto {
   @IsOptional()
   @IsEnum(['LOW', 'MEDIUM', 'HIGH', 'URGENT'])
   priority?: string;
-
   @IsOptional()
   @IsNumber()
   page?: number = 1;
@@ -58,4 +61,8 @@ export class ReportFilterDto {
   @IsOptional()
   @IsNumber()
   limit?: number = 10;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
 }

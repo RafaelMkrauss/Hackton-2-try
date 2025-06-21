@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains how to integrate Google Maps API with your CidadeReport application for displaying reports on an interactive map and location picking.
+This guide explains how to integrate Google Maps API with your BrasílIA Segura application for displaying reports on an interactive map and location picking.
 
 ## 🚀 Quick Setup
 
