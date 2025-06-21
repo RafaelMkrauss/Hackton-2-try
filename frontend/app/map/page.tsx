@@ -17,8 +17,17 @@ import {
   RefreshCwIcon,
   ClockIcon,
   CheckCircleIcon,
-  AlertTriangleIcon
+  AlertTriangleIcon,
+  EyeIcon,
+  SearchIcon,
+  InfoIcon,
+  ListIcon,
+  NavigationIcon,
+  ZoomInIcon,
+  ZoomOutIcon
 } from 'lucide-react'
+import { AccessibleStatusBadge } from '@/components/ui/AccessibleStatusBadge'
+import { AccessibleMapViewer } from '@/components/maps/AccessibleMapViewer'
 
 interface Report {
   id: string
@@ -47,6 +56,9 @@ export default function MapPage() {
   })
   const [isLoading, setIsLoading] = useState(true)
   const [mapLoaded, setMapLoaded] = useState(false)
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false)
 
   const categories = [
     'Infraestrutura',
@@ -127,13 +139,13 @@ export default function MapPage() {
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }))
   }
-
   if (loading || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando mapa...</p>
+          <p className="text-gray-600 text-lg">🗺️ Carregando mapa de denúncias...</p>
+          <p className="text-gray-500 text-sm mt-2">Aguarde enquanto carregamos as informações</p>
         </div>
       </div>
     )
@@ -146,8 +158,58 @@ export default function MapPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <MapPinIcon className="w-6 h-6 text-blue-600 mr-2" />
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                <MapPinIcon className="w-6 h-6 text-green-600" />
+              </div>
               <div>
+                <h1 className="text-2xl font-bold text-gray-900">Mapa de Denúncias</h1>
+                <p className="text-gray-600">🗺️ Visualize problemas urbanos na sua região</p>
+              </div>
+            </div>
+            
+            {/* View Toggle and Accessibility */}
+            <div className="flex items-center space-x-3">
+              <div className="bg-gray-100 rounded-lg p-1 flex">
+                <button
+                  onClick={() => setViewMode('map')}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors focus:ring-2 focus:ring-blue-300 ${
+                    viewMode === 'map'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                  aria-label="Visualizar em modo mapa"
+                  aria-pressed={viewMode === 'map'}
+                >
+                  <MapPinIcon className="w-4 h-4 mr-1 inline" />
+                  🗺️ Mapa
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors focus:ring-2 focus:ring-blue-300 ${
+                    viewMode === 'list'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                  aria-label="Visualizar em modo lista"
+                  aria-pressed={viewMode === 'list'}
+                >
+                  <ListIcon className="w-4 h-4 mr-1 inline" />
+                  📋 Lista
+                </button>
+              </div>
+              
+              <button
+                onClick={() => setShowAccessibilityPanel(!showAccessibilityPanel)}
+                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg focus:ring-2 focus:ring-blue-300 transition-colors"
+                aria-label="Painel de acessibilidade"
+                aria-expanded={showAccessibilityPanel}
+              >
+                <EyeIcon className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
                 <h1 className="text-2xl font-bold text-gray-900">Mapa de Denúncias</h1>
                 <p className="text-gray-600">{filteredReports.length} denúncias encontradas</p>
               </div>
