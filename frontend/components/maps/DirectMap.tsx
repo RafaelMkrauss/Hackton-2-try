@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-export function DirectMap({ reports = [], center = { lat: -23.5505, lng: -46.6333 }, zoom = 12 }: DirectMapProps) {
+export function DirectMap({ reports = [], center = { lat: -15.7942, lng: -47.8822 }, zoom = 12 }: DirectMapProps) { // Brasília default
   const mapRef = useRef<HTMLDivElement>(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)

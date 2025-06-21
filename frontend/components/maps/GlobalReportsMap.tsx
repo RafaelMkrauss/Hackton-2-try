@@ -91,7 +91,7 @@ export function GlobalReportsMap({
         console.log('Inicializando mapa com Google Maps global...')
         
         const mapOptions = {
-          center: { lat: -23.5505, lng: -46.6333 }, // São Paulo
+          center: { lat: -15.7942, lng: -47.8822 }, // Brasília
           zoom: 12,
           mapTypeControl: true,
           streetViewControl: true,

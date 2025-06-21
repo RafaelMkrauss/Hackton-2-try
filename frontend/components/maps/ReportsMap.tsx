@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react'
 import { GoogleMap, Marker, InfoWindow } from '@react-google-maps/api'
+import { DEFAULT_MAP_CENTER } from '@/lib/constants/maps'
 
 interface Report {
   id: string
@@ -31,10 +32,7 @@ const mapContainerStyle = {
   height: '100%'
 }
 
-const defaultCenter = {
-  lat: -23.5505, // São Paulo coordinates as default
-  lng: -46.6333
-}
+const defaultCenter = DEFAULT_MAP_CENTER // Brasília coordinates as default
 
 const mapOptions = {
   disableDefaultUI: false,

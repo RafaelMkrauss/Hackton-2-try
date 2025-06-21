@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { GoogleMap, Marker } from '@react-google-maps/api'
 import { MapPinIcon } from 'lucide-react'
+import { DEFAULT_MAP_CENTER } from '@/lib/constants/maps'
 
 interface LocationPickerProps {
   onLocationSelect: (location: { lat: number; lng: number; address?: string }) => void
@@ -15,10 +16,7 @@ const mapContainerStyle = {
   height: '300px'
 }
 
-const defaultCenter = {
-  lat: -23.5505, // São Paulo coordinates as default
-  lng: -46.6333
-}
+const defaultCenter = DEFAULT_MAP_CENTER // Brasília coordinates as default
 
 const mapOptions = {
   disableDefaultUI: true,

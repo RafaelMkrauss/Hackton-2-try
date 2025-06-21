@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { DEFAULT_MAP_CENTER } from '@/lib/constants/maps'
 
 interface Report {
   id: string
@@ -72,7 +73,7 @@ export function GlobalReportsMap({
         container.style.minHeight = '400px'
 
         const map = new (window as any).google.maps.Map(container, {
-          center: { lat: -23.5505, lng: -46.6333 },
+          center: DEFAULT_MAP_CENTER,
           zoom: 12,
           mapTypeControl: true,
           streetViewControl: true,
