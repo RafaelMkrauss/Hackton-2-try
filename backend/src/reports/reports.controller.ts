@@ -24,10 +24,13 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { parse } from 'path';
 import * as fs from 'fs/promises';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
+import { IaService } from '@/ia/ia.service';
 
 @Controller('reports')
 export class ReportsController {
-  constructor(private reportsService: ReportsService) {}
+  constructor(private reportsService: ReportsService,
+              private iaService: IaService
+  ) {}
 
   /*
   @Post()
@@ -67,8 +70,7 @@ export class ReportsController {
   const validImages: Express.Multer.File[] = [];
 
   for (const file of files.images) {
-    const predictionStr = await this.reportsService.runPythonModel(file.path);
-    const prediction = parseFloat(predictionStr);
+    const prediction = await this.iaService.runPythonScript({ photoPath: file.path });
 
     if (isNaN(prediction) || prediction < 0.5) {
       console.log(`Image ${file.originalname} rejected with prediction: ${prediction}`);
