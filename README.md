@@ -1,6 +1,13 @@
-# Sistema de Relatórios - Hackaton 2
+# Relatos urbanos: hackathon da Campus Party 2025 (4º lugar)
 
-Uma aplicação web completa para gerenciamento de relatórios com integração ao Google Maps, construída com as melhores tecnologias modernas.
+Aplicação web para moradores relatarem problemas da cidade, como iluminação pública, buracos na via e limpeza urbana, com foto e localização no mapa. A equipe responsável acompanha os relatos em um painel e atualiza o status de cada um. A foto enviada passa por um modelo YOLOv5 que identifica o problema, e os moradores também podem avaliar os serviços públicos da sua região por categoria.
+
+Projeto desenvolvido em equipe no hackathon da Campus Party, em junho de 2025, onde ficamos em 4º lugar.
+
+## Minha parte
+
+- Integração com o Google Maps: visualização dos relatos no mapa e escolha da localização ao criar um relato.
+- Partes da interface visual do front-end.
 
 ## 🚀 Tecnologias Utilizadas
 
@@ -19,6 +26,7 @@ Uma aplicação web completa para gerenciamento de relatórios com integração 
 - **WebSockets** para atualizações em tempo real
 - **Multer** para upload de arquivos
 - Controle de acesso baseado em roles (User vs Staff)
+- **YOLOv5** (PyTorch) para identificar o problema na foto, chamado por um script Python
 
 ### Banco de Dados
 
